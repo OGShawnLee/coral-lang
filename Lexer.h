@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <vector>
 #include <string>
 #include <map>
@@ -16,6 +17,7 @@ enum class Keyword {
 
 enum class Marker {
   STR_QUOTE,
+  STR_INJECTION,
 };
 
 class Token {
@@ -30,6 +32,7 @@ class Token {
 
     std::string data;
     Kind kind;
+    std::vector<std::string> injections;
 
     Token() = default;
 
@@ -47,10 +50,20 @@ class Token {
 
     static bool is_marker(const char character);
 
+    static bool is_valid_id_char(const char character);
+
+    static bool is_next(const std::string &line, const size_t start_index, std::function<bool(const char)> predicate);
+
     void print() const;
 };
 
 typedef std::vector<Token> Stream;
+
+template <typename T>
+struct Peek {
+  T data;
+  size_t end_index;
+};
 
 struct Result {
   Token data;
@@ -60,10 +73,12 @@ struct Result {
 class Lexer {
   static Token handle_buffer(std::string &buffer);
 
+  static Peek<std::string> handle_str_injection(const std::string &line, const size_t start_index);
+
   static Result handle_str_literal(const std::string &line, const size_t start_index);
 
   public:
-    static Stream lex_ln(const std::string &line);
+    static Stream lex_ln(std::string line);
     
     static Stream lex_file(const std::string &line);
 };

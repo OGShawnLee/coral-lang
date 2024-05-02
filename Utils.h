@@ -26,4 +26,13 @@ namespace Utils {
     std::string line;
     while (std::getline(file, line)) fn(line);
   }
+
+  std::string join(const std::vector<std::string> &strings, const std::string &separator) {
+    std::string result;
+    for (size_t i = 0; i < strings.size(); i++) {
+      result += strings[i];
+      if (i + 1 < strings.size()) result += separator;
+    }
+    return result;
+  }
 }

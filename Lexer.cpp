@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Lexer.h"
 #include "Utils.h"
 
@@ -25,6 +26,7 @@ std::map<std::string, Keyword> KEYWORD = {
 
 std::map<char, Marker> MARKER = {
   {'"', Marker::STR_QUOTE},
+  {'#', Marker::STR_INJECTION},
 };
 
 Token::Token(const char character) {
@@ -60,9 +62,49 @@ bool Token::is_marker(const char character) {
   return MARKER.find(character) != MARKER.end();
 }
 
+bool Token::is_valid_id_char(const char character) {
+  return std::isalnum(character) or character == '_' or character == '$';
+}
+
+bool is_next(const std::string &line, const size_t start_index, std::function<bool(const char)> predicate) {
+  if (start_index + 1 >= line.size()) {
+    return false;
+  }
+
+  return predicate(line[start_index + 1]);
+}
+
 void Token::print() const {
   std::string kind = get_kind_name(this->kind);
-  println(kind + " { data: " + data + " }");
+
+  if (injections.empty()) {
+    println(kind + " { data: " + data + " }");
+  } else {
+    println(kind + " {");
+    println("  data: " + data);
+    println("  injections: [" + Utils::join(injections, ", ") + "]");
+    println("}");
+  }
+}
+
+Peek<std::string> Lexer::handle_str_injection(const std::string &line, size_t start_index) {
+  Peek<std::string> result;
+  std::string injection;
+
+  for (size_t i = start_index + 1; i < line.size(); i++) {
+    const char character = line[i];
+
+    if (not Token::is_valid_id_char(character)) {
+      result.data = std::move(injection);
+      result.end_index = i - 1;
+      return result;
+    }
+
+    injection += character;
+  }
+
+  result.end_index = line.size() - 1;
+  return result;
 }
 
 Result Lexer::handle_str_literal(const std::string &line, size_t start_index) {
@@ -79,9 +121,23 @@ Result Lexer::handle_str_literal(const std::string &line, size_t start_index) {
     }
 
     literal += character;
+
+    if (character == '#') {
+      bool is_next_alpha = is_next(line, i, [](char character) {
+        return std::isalpha(character);
+      });
+
+      if (is_next_alpha) {
+        Peek<std::string> injection = handle_str_injection(line, i);
+        result.data.injections.push_back(injection.data);
+        literal += injection.data;
+        i = injection.end_index;
+        continue;
+      }
+    }
   }
 
-  throw std::runtime_error("DEV: Unterminated string literal");
+  throw std::runtime_error("DEV: Unterminated String Literal");
 }
 
 Token Lexer::handle_buffer(std::string &buffer) {
@@ -101,9 +157,11 @@ Token Lexer::handle_buffer(std::string &buffer) {
   return token;
 }
 
-Stream Lexer::lex_ln(const std::string &line) {
+Stream Lexer::lex_ln(std::string line) {
   Stream stream;
   std::string buffer;
+
+  line += ' ';
   
   for (size_t i = 0; i < line.size(); i++) {
     const char character = line[i];
