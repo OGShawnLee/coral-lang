@@ -1,0 +1,3 @@
+val name = "Shawn Lee"
+val country = "China"
+var message = "#name lives in #country"
