@@ -11,6 +11,7 @@ class Variable : public Statement {
     Kind kind = Kind::STATEMENT;
     std::string name;
     std::string value;
+    std::string typing;
     bool is_constant;
     bool is_field = false;
 

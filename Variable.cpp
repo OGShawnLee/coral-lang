@@ -40,14 +40,27 @@ PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_i
     return token.is_given_kind(Token::Kind::IDENTIFIER);
   });
 
-  Peek<Token> value = stream.peek(name.end_index, [](const Token &token) {
-    return token.is_given_kind(Token::Kind::IDENTIFIER);
+  // field <type> | field = <value>
+  Peek<Token> next = stream.peek(name.end_index, [](const Token &token) {
+    return token.is_given_kind(Token::Kind::IDENTIFIER) || token.is_given_operator(Operator::ASSIGN);
   });
 
-  result.data->is_field = true;
+  if (next.data.is_given_operator(Operator::ASSIGN)) {
+    // field = <value>
+    Peek<Token> value = stream.peek(next.end_index, [](const Token &token) {
+      return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
+    });
+
+    result.data->value = value.data.data;
+    result.end_index = value.end_index;
+  } else {
+    // field <type>
+    result.data->typing = next.data.data;
+    result.end_index = next.end_index;
+  }
+
   result.data->name = name.data.data;
-  result.data->value = value.data.data;
-  result.end_index = value.end_index;
+  result.data->is_field = true;
   return result;
 }
 
@@ -64,11 +77,15 @@ void Variable::print(size_t indent) const {
 
   println(indentation + "  name: " + name);
 
-  if (is_field) {
-    println(indentation + "  type: " + value);
-  } else {
-    println(indentation + "  value: " + value);  
-  }
+  if (not value.empty()) {
+    println(
+      indentation + (is_field ? "  default value: " : "  value: ") + value
+    );
+  } 
   
+  if (not typing.empty()) {
+    println(indentation + "  type: " + typing);  
+  }
+
   println(indentation + "}");
 }

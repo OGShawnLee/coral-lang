@@ -5,6 +5,7 @@ var message = "#name lives in #country"
 struct Person {
   name str
   country str
+  planet = "Earth"
 }
 
 fn greet(name str) {

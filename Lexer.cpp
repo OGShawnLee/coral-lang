@@ -62,6 +62,10 @@ bool Token::is_given_kind(const Kind &kind) const {
   return this->kind == kind;
 }
 
+bool Token::is_given_kind(const Kind &kind_a, const Kind &kind_b) const {
+  return kind == kind_a or kind == kind_b;
+}
+
 bool Token::is_given_keyword(const Keyword &keyword) const {
   if (kind != Kind::KEYWORD) {
     return false;
@@ -76,6 +80,14 @@ bool Token::is_given_marker(const Marker &marker) const {
   }
 
   return MARKER.at(data[0]) == marker;
+}
+
+bool Token::is_given_operator(const Operator &op) const {
+  if (kind != Kind::OPERATOR) {
+    return false;
+  }
+
+  return OPERATOR.at(data) == op;
 }
 
 Marker Token::get_marker(const char character) {
