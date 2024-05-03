@@ -51,6 +51,12 @@ class Token {
 
     static Keyword get_keyword(const std::string &buffer);
 
+    static bool is_bool_literal(const std::string &buffer);
+
+    static bool is_float_literal(const std::string &buffer);
+
+    static bool is_int_literal(const std::string &buffer);
+
     static bool is_operator(const std::string &buffer);
 
     static bool is_keyword(const std::string &buffer);

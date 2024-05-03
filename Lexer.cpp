@@ -57,6 +57,20 @@ Keyword Token::get_keyword(const std::string &line) {
   return KEYWORD.at(line);
 }
 
+bool is_bool_literal(const std::string &line) {
+  return line == "true" or line == "false";
+}
+
+bool is_float_literal(const std::string &line) {
+  return std::count(line.begin(), line.end(), '.') == 1;
+}
+
+bool is_int_literal(const std::string &line) {
+  return std::all_of(line.begin(), line.end(), [](char character) {
+    return std::isdigit(character);
+  });
+}
+
 bool Token::is_operator(const std::string &line) {
   return OPERATOR.find(line) != OPERATOR.end();
 }
@@ -154,6 +168,12 @@ Token Lexer::handle_buffer(std::string &buffer) {
     token.kind = Token::Kind::OPERATOR;
   } else if (Token::is_keyword(buffer)) {
     token.kind = Token::Kind::KEYWORD;
+  } else if (
+    is_bool_literal(buffer) or
+    is_float_literal(buffer) or
+    is_int_literal(buffer)
+  ) {
+    token.kind = Token::Kind::LITERAL;  
   } else {
     token.kind = Token::Kind::IDENTIFIER;
   }

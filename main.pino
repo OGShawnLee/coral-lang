@@ -14,3 +14,12 @@ fn greet(name str) {
 fn get_message(name str, country str) {
   return "#name lives in #country"
 }
+
+val model = 15
+val screen_size = 6.1
+val phone = "iPhone #model"
+val is_premium = true
+
+message = "#phone has a screen size of #screen_size inches"
+
+println(message)
