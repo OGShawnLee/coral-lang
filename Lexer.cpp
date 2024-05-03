@@ -1,3 +1,5 @@
+#pragma once
+
 #include <algorithm>
 #include "Lexer.h"
 #include "Utils.h"
@@ -117,6 +119,33 @@ void Token::print() const {
     println("  injections: [" + Utils::join(injections, ", ") + "]");
     println("}");
   }
+}
+
+Peek<Token> Stream::peek(
+  const size_t &start_index,
+  const std::function<bool(const Token)> predicate
+) const {
+  Peek<Token> result;
+
+  try {
+    result.data = at(start_index + 1);
+  } catch (const std::out_of_range &error) {
+    throw std::runtime_error("DEV: Out of Range");
+  }
+
+  if (predicate(result.data)) {
+    result.end_index = start_index + 1;
+  } else {
+    println("Unexpected Token: ");
+    result.data.print();
+    throw std::runtime_error("DEV: Unexepected Token");
+  }
+
+  return result;
+}
+
+void Stream::print() const {
+  for (const Token &token : *this) token.print();
 }
 
 Peek<std::string> Lexer::handle_str_injection(const std::string &line, size_t start_index) {

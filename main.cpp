@@ -1,8 +1,7 @@
-#include "Lexer.cpp"
+#include "Parser.cpp"
 
 int main() {
-  Stream stream = Lexer::lex_file("main.pino");
-  for (const Token &token : stream) token.print();
-
+  Statement program = Parser::parse("main.pino");
+  program.print();
   return 0;
 }

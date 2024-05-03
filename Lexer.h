@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Utils.h"
 #include <functional>
 #include <vector>
 #include <string>
@@ -81,12 +82,13 @@ class Token {
     void print() const;
 };
 
-typedef std::vector<Token> Stream;
+class Stream : public std::vector<Token> {
+  public:
+    Stream() = default;
 
-template <typename T>
-struct Peek {
-  T data;
-  size_t end_index;
+    Peek<Token> peek(const size_t &start_index, const std::function<bool(const Token)> predicate) const;
+
+    void print() const;
 };
 
 struct Result {
