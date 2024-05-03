@@ -13,11 +13,18 @@ enum class Keyword {
   FN,
   VAR,
   VAL,
+  STRUCT,
+  FUNCTION,
+  RETURN,
 };
 
 enum class Marker {
   STR_QUOTE,
   STR_INJECTION,
+  RIGHT_BRACE,
+  LEFT_BRACE,
+  RIGHT_PARENTHESIS,
+  LEFT_PARENTHESIS,
 };
 
 class Token {

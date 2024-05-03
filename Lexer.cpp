@@ -22,11 +22,18 @@ std::map<std::string, Keyword> KEYWORD = {
   {"fn", Keyword::FN},
   {"var", Keyword::VAR},
   {"val", Keyword::VAL},
+  {"struct", Keyword::STRUCT},
+  {"fn", Keyword::FUNCTION},
+  {"return", Keyword::RETURN},
 };
 
 std::map<char, Marker> MARKER = {
   {'"', Marker::STR_QUOTE},
   {'#', Marker::STR_INJECTION},
+  {'}', Marker::RIGHT_BRACE},
+  {'{', Marker::LEFT_BRACE},
+  {')', Marker::RIGHT_PARENTHESIS},
+  {'(', Marker::LEFT_PARENTHESIS},
 };
 
 Token::Token(const char character) {
@@ -186,6 +193,11 @@ Stream Lexer::lex_ln(std::string line) {
           Result result = handle_str_literal(line, i);
           stream.push_back(result.data);
           i = result.end_index;
+          break;
+        }
+        default: {
+          Token token(character);
+          stream.push_back(token);
           break;
         }
       }

@@ -1,3 +1,16 @@
 val name = "Shawn Lee"
 val country = "China"
 var message = "#name lives in #country"
+
+struct Person {
+  name str
+  country str
+}
+
+fn greet(name str) {
+  println("Hello, #name!")
+}
+
+fn get_message(name str, country str) {
+  return "#name lives in #country"
+}
