@@ -7,6 +7,14 @@
 
 enum class Operator {
   ASSIGN,
+  ADD,
+  SUB,
+  MUL,
+  DIV,
+  MOD,
+  AND,
+  OR,
+  NOT,
 };
 
 enum class Keyword {
@@ -16,6 +24,9 @@ enum class Keyword {
   STRUCT,
   FUNCTION,
   RETURN,
+  FOR,
+  IF,
+  ELSE,
 };
 
 enum class Marker {

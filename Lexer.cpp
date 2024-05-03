@@ -16,6 +16,14 @@ std::string get_kind_name(Token::Kind kind) {
 
 std::map<std::string, Operator> OPERATOR = {
   {"=", Operator::ASSIGN},
+  {"+", Operator::ADD},
+  {"-", Operator::SUB},
+  {"*", Operator::MUL},
+  {"/", Operator::DIV},
+  {"%", Operator::MOD},
+  {"and", Operator::AND},
+  {"or", Operator::OR},
+  {"not", Operator::NOT},
 };
 
 std::map<std::string, Keyword> KEYWORD = {
@@ -25,6 +33,9 @@ std::map<std::string, Keyword> KEYWORD = {
   {"struct", Keyword::STRUCT},
   {"fn", Keyword::FUNCTION},
   {"return", Keyword::RETURN},
+  {"for", Keyword::FOR},
+  {"if", Keyword::IF},
+  {"else", Keyword::ELSE},
 };
 
 std::map<char, Marker> MARKER = {
