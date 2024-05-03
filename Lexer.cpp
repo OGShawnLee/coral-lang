@@ -58,6 +58,26 @@ Token::Token(const char character) {
   data = character;
 }
 
+bool Token::is_given_kind(const Kind &kind) const {
+  return this->kind == kind;
+}
+
+bool Token::is_given_keyword(const Keyword &keyword) const {
+  if (kind != Kind::KEYWORD) {
+    return false;
+  }
+
+  return KEYWORD.at(data) == keyword;
+}
+
+bool Token::is_given_marker(const Marker &marker) const {
+  if (kind != Kind::MARKER) {
+    return false;
+  }
+
+  return MARKER.at(data[0]) == marker;
+}
+
 Marker Token::get_marker(const char character) {
   return MARKER.at(character);
 }

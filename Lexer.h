@@ -57,6 +57,12 @@ class Token {
 
     explicit Token(const char character);
 
+    bool is_given_kind(const Kind &kind) const;
+
+    bool is_given_keyword(const Keyword &keyword) const;
+
+    bool is_given_marker(const Marker &marker) const;
+
     static Marker get_marker(const char character);
 
     static Operator get_operator(const std::string &buffer);

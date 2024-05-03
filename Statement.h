@@ -14,6 +14,7 @@ class Statement {
     enum class Type {
       VARIABLE_DECLARATION,
       CONSTANT_DECLARATION,
+      STRUCT_DECLARATION,
     };
 
     Kind kind = Kind::STATEMENT;

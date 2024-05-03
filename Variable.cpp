@@ -29,20 +29,46 @@ PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
 
   result.data->name = name.data.data;
   result.data->value = value.data.data;
-  result.end_index = name.end_index;
+  result.end_index = value.end_index;
+  return result;
+}
+
+PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_index) {
+  PeekPtr<Variable> result;
+
+  Peek<Token> name = stream.peek(start_index, [](const Token &token) {
+    return token.is_given_kind(Token::Kind::IDENTIFIER);
+  });
+
+  Peek<Token> value = stream.peek(name.end_index, [](const Token &token) {
+    return token.is_given_kind(Token::Kind::IDENTIFIER);
+  });
+
+  result.data->is_field = true;
+  result.data->name = name.data.data;
+  result.data->value = value.data.data;
+  result.end_index = value.end_index;
   return result;
 }
 
 void Variable::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
 
-  if (is_constant) {
+  if (is_field) {
+    println(indentation + "Field {");
+  } else if (is_constant) {
     println(indentation + "Constant {");
   } else {
     println(indentation + "Variable {");
   }
 
   println(indentation + "  name: " + name);
-  println(indentation + "  value: " + value);
+
+  if (is_field) {
+    println(indentation + "  type: " + value);
+  } else {
+    println(indentation + "  value: " + value);  
+  }
+  
   println(indentation + "}");
 }
