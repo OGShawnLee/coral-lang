@@ -79,9 +79,9 @@ void Variable::print(size_t indent) const {
 
   if (not value.empty()) {
     println(
-      indentation + (is_field ? "  default value: " : "  value: ") + value
+      indentation + (is_field ? "  default: " : "  value: ") + value
     );
-  } 
+  }
   
   if (not typing.empty()) {
     println(indentation + "  type: " + typing);  

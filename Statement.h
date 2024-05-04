@@ -15,6 +15,7 @@ class Statement {
       VARIABLE_DECLARATION,
       CONSTANT_DECLARATION,
       STRUCT_DECLARATION,
+      FUNCTION_DECLARATION,
     };
 
     Kind kind = Kind::STATEMENT;

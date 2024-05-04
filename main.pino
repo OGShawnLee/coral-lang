@@ -8,12 +8,20 @@ struct Person {
   planet = "Earth"
 }
 
-fn greet(name str) {
-  println("Hello, #name!")
+fn greet(name str, is_human = true) {
+  if is_human {
+    println("Hello, #name!")
+  } else {
+    println("Greetings, creature named #name?")
+  }
 }
 
-fn get_message(name str, country str) {
-  return "#name lives in #country"
+fn get_message(
+  name str 
+  country str 
+  planet = "Earth"
+) {
+  return "#name lives in #country on #planet"
 }
 
 val model = 15

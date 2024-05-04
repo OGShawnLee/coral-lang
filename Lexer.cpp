@@ -29,7 +29,6 @@ std::map<std::string, Operator> OPERATOR = {
 };
 
 std::map<std::string, Keyword> KEYWORD = {
-  {"fn", Keyword::FN},
   {"var", Keyword::VAR},
   {"val", Keyword::VAL},
   {"struct", Keyword::STRUCT},
@@ -47,6 +46,7 @@ std::map<char, Marker> MARKER = {
   {'{', Marker::LEFT_BRACE},
   {')', Marker::RIGHT_PARENTHESIS},
   {'(', Marker::LEFT_PARENTHESIS},
+  {',', Marker::COMMA},
 };
 
 Token::Token(const char character) {
@@ -88,6 +88,15 @@ bool Token::is_given_operator(const Operator &op) const {
   }
 
   return OPERATOR.at(data) == op;
+}
+
+bool Token::is_given_marker(const Marker &marker_a, const Marker &marker_b) const {
+  if (kind != Kind::MARKER) {
+    return false;
+  }
+
+  Marker marker = MARKER.at(data[0]);
+  return marker == marker_a or marker == marker_b;
 }
 
 Marker Token::get_marker(const char character) {
@@ -266,10 +275,10 @@ Stream Lexer::lex_ln(std::string line) {
   for (size_t i = 0; i < line.size(); i++) {
     const char character = line[i];
 
-    if (std::isspace(character)) {
-      if (not buffer.empty()) {
-        stream.push_back(handle_buffer(buffer));
-      }
+    if (Utils::is_whitespace(character)) {
+      if (buffer.empty()) continue;
+
+      stream.push_back(handle_buffer(buffer));
 
       continue;
     }

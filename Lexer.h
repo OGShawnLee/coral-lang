@@ -19,7 +19,6 @@ enum class Operator {
 };
 
 enum class Keyword {
-  FN,
   VAR,
   VAL,
   STRUCT,
@@ -37,6 +36,7 @@ enum class Marker {
   LEFT_BRACE,
   RIGHT_PARENTHESIS,
   LEFT_PARENTHESIS,
+  COMMA,
 };
 
 class Token {
@@ -63,6 +63,7 @@ class Token {
     bool is_given_keyword(const Keyword &keyword) const;
 
     bool is_given_marker(const Marker &marker) const;
+    bool is_given_marker(const Marker &marker_a, const Marker &marker_b) const;
 
     bool is_given_operator(const Operator &op) const;
 

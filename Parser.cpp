@@ -2,6 +2,7 @@
 
 #include "Parser.h"
 #include "Lexer.cpp"
+#include "Function.cpp"
 #include "Struct.cpp"
 #include "Variable.cpp"
 
@@ -15,6 +16,12 @@ Statement Parser::parse(const std::string &file_path) {
 
     if (token.kind == Token::Kind::KEYWORD) {
       Keyword keyword = Token::get_keyword(token.data);
+
+      if (keyword == Keyword::FUNCTION) {
+        PeekPtr<Function> function = Function::build(stream, i);
+        program.children.push_back(std::move(function.data));
+        i = function.end_index;
+      }
 
       if (keyword == Keyword::STRUCT) {
         PeekPtr<Struct> structure = Struct::build(stream, i);
