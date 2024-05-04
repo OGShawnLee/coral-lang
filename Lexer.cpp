@@ -210,6 +210,7 @@ Result Lexer::handle_str_literal(const std::string &line, size_t start_index) {
     if (character == '"') {
       result.data.kind = Token::Kind::LITERAL;
       result.data.data = std::move(literal);
+      result.end_index = i;
       return result;
     }
 
