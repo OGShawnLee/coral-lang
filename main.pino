@@ -8,6 +8,10 @@ struct Person {
   planet = "Earth"
 }
 
+fn print {
+  println("What is going on?")
+}
+
 fn greet(name str, is_human = true) {
   if is_human {
     println("Hello, #name!")

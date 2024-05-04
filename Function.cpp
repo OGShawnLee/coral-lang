@@ -15,11 +15,19 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
     return token.is_given_kind(Token::Kind::IDENTIFIER);
   });
 
-  Peek<Token> open_parenthesis = stream.peek(name.end_index, [](const Token &token) {
-    return token.is_given_marker(Marker::LEFT_PARENTHESIS);
+  Peek<Token> opening = stream.peek(name.end_index, [](const Token &token) {
+    return token.is_given_marker(Marker::LEFT_PARENTHESIS, Marker::LEFT_BRACE);
   });
-  
-  size_t index = open_parenthesis.end_index;
+
+  // fn <name> { <body> }
+  if (opening.data.is_given_marker(Marker::LEFT_BRACE)) {
+    result.data->name = name.data.data;
+    result.end_index = opening.end_index;
+    return result;
+  }
+
+  // fn <name> ( <parameters> ) { <body> }
+  size_t index = opening.end_index;
 
   while (index < stream.size()) {
     Peek<Token> next = stream.peek(index, [](const Token &token) {
@@ -52,12 +60,16 @@ void Function::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "Function {");
   println(indentation + "  name: " + name);
-  println(indentation + "  parameters: [");
+  
+  if (not parameters.empty()) {
+    println(indentation + "  parameters: [");
 
-  for (const std::unique_ptr<Variable> &parameter : parameters) {
-    parameter->print(indent + 2);
+    for (const std::unique_ptr<Variable> &parameter : parameters) {
+      parameter->print(indent + 2);
+    }
+
+    println(indentation + "  ]");
   }
 
-  println(indentation + "  ]");
   println(indentation + "}");
 }
