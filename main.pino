@@ -2,10 +2,20 @@ val name = "Shawn Lee"
 val country = "China"
 var message = "#name lives in #country"
 
+enum Hair {
+  BALD 
+  VERY_SHORT 
+  SHORT
+  MEDIUM
+  LONG
+  VERY_LONG
+}
+
 struct Person {
   name str
   country str
   planet = "Earth"
+  hair Hair
 }
 
 fn print {

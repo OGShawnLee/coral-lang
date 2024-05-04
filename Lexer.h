@@ -21,6 +21,7 @@ enum class Operator {
 enum class Keyword {
   VAR,
   VAL,
+  ENUM,
   STRUCT,
   FUNCTION,
   RETURN,

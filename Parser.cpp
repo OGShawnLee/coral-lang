@@ -2,6 +2,7 @@
 
 #include "Parser.h"
 #include "Lexer.cpp"
+#include "Enum.cpp"
 #include "For.cpp"
 #include "Function.cpp"
 #include "Struct.cpp"
@@ -17,6 +18,12 @@ Statement Parser::parse(const std::string &file_path) {
 
     if (token.kind == Token::Kind::KEYWORD) {
       Keyword keyword = Token::get_keyword(token.data);
+
+      if (keyword == Keyword::ENUM) {
+        PeekPtr<Enum> enumeration = Enum::build(stream, i);
+        program.children.push_back(std::move(enumeration.data));
+        i = enumeration.end_index;
+      }
 
       if (keyword == Keyword::FOR) {
         PeekPtr<For> loop = For::build(stream, i);

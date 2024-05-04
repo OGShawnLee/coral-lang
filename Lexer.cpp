@@ -31,6 +31,7 @@ std::map<std::string, Operator> OPERATOR = {
 std::map<std::string, Keyword> KEYWORD = {
   {"var", Keyword::VAR},
   {"val", Keyword::VAL},
+  {"enum", Keyword::ENUM},
   {"struct", Keyword::STRUCT},
   {"fn", Keyword::FUNCTION},
   {"return", Keyword::RETURN},
