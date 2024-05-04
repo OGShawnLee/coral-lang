@@ -29,6 +29,7 @@ std::map<std::string, Operator> OPERATOR = {
 };
 
 std::map<std::string, BinaryOperator> BINARY_OPERATOR = {
+  {"=", BinaryOperator::ASSIGN},
   {"+", BinaryOperator::ADD},
   {"-", BinaryOperator::SUB},
   {"*", BinaryOperator::MUL},
@@ -36,6 +37,7 @@ std::map<std::string, BinaryOperator> BINARY_OPERATOR = {
   {"%", BinaryOperator::MOD},
   {"and", BinaryOperator::AND},
   {"or", BinaryOperator::OR},
+  {":", BinaryOperator::COLON},
 };
 
 std::map<std::string, Keyword> KEYWORD = {
@@ -59,6 +61,7 @@ std::map<char, Marker> MARKER = {
   {')', Marker::RIGHT_PARENTHESIS},
   {'(', Marker::LEFT_PARENTHESIS},
   {',', Marker::COMMA},
+  {':', Marker::COLON},
 };
 
 Token::Token(const char character) {

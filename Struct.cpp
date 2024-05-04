@@ -31,9 +31,9 @@ PeekPtr<Struct> Struct::build(Stream &stream, const size_t &start_index) {
       result.end_index = next.end_index;
       
       if (result.data->fields.empty()) {
-        throw std::runtime_error("USER: Struct " + name.data.data + " has no fields");
+        throw std::runtime_error("USER: Struct " + name.data.data + " has no fields");      
       }
-
+      
       return result;
     }
     

@@ -6,16 +6,21 @@
 class Expression : public Statement {
   public:
     enum class Type {
+      BINARY,
+        ASSIGNMENT,
+        PROPERTY_ACCESS,
+      FUNCTION_CALL,
       LITERAL,
       IDENTIFIER,
     };
 
     Type type;
     std::string value;
+    std::vector<std::unique_ptr<Expression>> arguments;
 
     static bool is_expression(Stream &stream, const size_t &start_index);
 
-    static PeekPtr<Expression> build(Stream &stream, const size_t &start_index);
+    static PeekPtr<Expression> build(Stream &stream, const size_t &start_index, const bool &with_binary = true);
 
     void print(size_t indent = 0) const override;
 

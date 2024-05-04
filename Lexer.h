@@ -19,6 +19,7 @@ enum class Operator {
 };
 
 enum class BinaryOperator {
+  ASSIGN,
   ADD,
   SUB,
   MUL,
@@ -26,6 +27,7 @@ enum class BinaryOperator {
   MOD,
   AND,
   OR,
+  COLON,
 };
 
 enum class Keyword {
@@ -49,6 +51,7 @@ enum class Marker {
   RIGHT_PARENTHESIS,
   LEFT_PARENTHESIS,
   COMMA,
+  COLON,
 };
 
 class Token {

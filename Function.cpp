@@ -3,6 +3,16 @@
 #include "Utils.h"
 #include "Function.h"
 
+bool Function::is_fn_call(Stream &stream, const size_t &start_index) {
+  return 
+    stream.is_next(start_index, [](const Token &token) {
+      return token.is_given_kind(Token::Kind::IDENTIFIER);
+    }) && 
+    stream.is_next(start_index + 1, [](const Token &token) {
+      return token.is_given_marker(Marker::LEFT_PARENTHESIS);
+    });
+}
+
 PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Function> result;
 
@@ -55,7 +65,6 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   throw std::runtime_error("USER: Unterminated Function " + name.data.data + " Declaration");
 }
 
-
 void Function::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "Function {");
@@ -72,4 +81,43 @@ void Function::print(size_t indent) const {
   }
 
   println(indentation + "}");
+}
+
+PeekPtr<Expression> Function::build_as_fn_call(Stream &stream, const size_t &start_index) {
+  PeekPtr<Expression> result;
+
+  Peek<Token> name = stream.peek(start_index, [](const Token &token) {
+    return token.is_given_kind(Token::Kind::IDENTIFIER);
+  });
+
+  result.data->value += name.data.data;
+
+  Peek<Token> opening = stream.peek(name.end_index, [](const Token &token) {
+    return token.is_given_marker(Marker::LEFT_PARENTHESIS);
+  });
+
+  size_t index = opening.end_index;
+
+  while (index < stream.size()) {
+    Token next = stream.get_next(index);
+
+    if (next.is_given_marker(Marker::COMMA)) {
+      index++;
+      continue;
+    }
+
+    if (next.is_given_marker(Marker::RIGHT_PARENTHESIS)) {
+      result.data->type = Expression::Type::FUNCTION_CALL;
+      result.end_index = index + 1;
+      return result;
+    }
+
+    if (Expression::is_expression(stream, index)) {
+      PeekPtr<Expression> argument = Expression::build(stream, index);
+      result.data->arguments.push_back(std::move(argument.data));
+      index = argument.end_index;
+    }
+  }
+
+  throw std::runtime_error("USER: Unterminated Function Call " + name.data.data);
 }
