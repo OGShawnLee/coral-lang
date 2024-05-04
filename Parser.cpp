@@ -4,6 +4,7 @@
 #include "Lexer.cpp"
 #include "Enum.cpp"
 #include "For.cpp"
+#include "Expression.cpp"
 #include "Function.cpp"
 #include "Struct.cpp"
 #include "Variable.cpp"

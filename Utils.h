@@ -22,6 +22,10 @@ struct PeekPtr {
   }
 };
 
+void printsln(const std::string &line) {
+  std::cout << line;
+}
+
 void println(const std::string &line) {
   std::cout << line << std::endl;
 }

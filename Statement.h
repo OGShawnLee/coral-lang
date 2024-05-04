@@ -9,6 +9,7 @@ class Statement {
     enum class Kind {
       PROGRAM,
       STATEMENT,
+      EXPRESSION,
     };
 
     enum class Type {

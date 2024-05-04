@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "Utils.h"
+#include "Expression.h"
 #include "Statement.h"
 
 class Variable : public Statement {
@@ -10,7 +11,7 @@ class Variable : public Statement {
     Type type = Type::VARIABLE_DECLARATION;
     Kind kind = Kind::STATEMENT;
     std::string name;
-    std::string value;
+    std::unique_ptr<Expression> value;
     std::string typing;
     bool is_constant;
     bool is_field = false;

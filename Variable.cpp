@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils.h"
+#include "Expression.cpp"
 #include "Variable.h"
 
 PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
@@ -23,12 +24,10 @@ PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
     return token.kind == Token::Kind::OPERATOR and token.data == "=";
   });
 
-  Peek<Token> value = stream.peek(assignment.end_index, [](const Token &token) {
-    return token.kind == Token::Kind::LITERAL || token.kind == Token::Kind::IDENTIFIER;
-  });
+  PeekPtr<Expression> value = Expression::build(stream, assignment.end_index);
 
   result.data->name = name.data.data;
-  result.data->value = value.data.data;
+  result.data->value = std::move(value.data);
   result.end_index = value.end_index;
   return result;
 }
@@ -47,11 +46,9 @@ PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_i
 
   if (next.data.is_given_operator(Operator::ASSIGN)) {
     // field = <value>
-    Peek<Token> value = stream.peek(next.end_index, [](const Token &token) {
-      return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
-    });
+    PeekPtr<Expression> value = Expression::build(stream, next.end_index);
 
-    result.data->value = value.data.data;
+    result.data->value = std::move(value.data);
     result.end_index = value.end_index;
   } else {
     // field <type>
@@ -77,9 +74,9 @@ void Variable::print(size_t indent) const {
 
   println(indentation + "  name: " + name);
 
-  if (not value.empty()) {
+  if (value != nullptr) {
     println(
-      indentation + (is_field ? "  default: " : "  value: ") + value
+      indentation + (is_field ? "  default: " : "  value: ") + value->to_string(indent + 1)
     );
   }
   

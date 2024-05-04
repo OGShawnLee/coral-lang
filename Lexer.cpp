@@ -28,6 +28,16 @@ std::map<std::string, Operator> OPERATOR = {
   {"not", Operator::NOT},
 };
 
+std::map<std::string, BinaryOperator> BINARY_OPERATOR = {
+  {"+", BinaryOperator::ADD},
+  {"-", BinaryOperator::SUB},
+  {"*", BinaryOperator::MUL},
+  {"/", BinaryOperator::DIV},
+  {"%", BinaryOperator::MOD},
+  {"and", BinaryOperator::AND},
+  {"or", BinaryOperator::OR},
+};
+
 std::map<std::string, Keyword> KEYWORD = {
   {"var", Keyword::VAR},
   {"val", Keyword::VAL},
@@ -113,6 +123,10 @@ Operator Token::get_operator(const std::string &line) {
   return OPERATOR.at(line);
 }
 
+BinaryOperator Token::get_binary_operator(const std::string &line) {
+  return BINARY_OPERATOR.at(line);
+}
+
 Keyword Token::get_keyword(const std::string &line) {
   return KEYWORD.at(line);
 }
@@ -133,6 +147,10 @@ bool is_int_literal(const std::string &line) {
 
 bool Token::is_operator(const std::string &line) {
   return OPERATOR.find(line) != OPERATOR.end();
+}
+
+bool Token::is_binary_operator(const std::string &line) {
+  return BINARY_OPERATOR.find(line) != BINARY_OPERATOR.end();
 }
 
 bool Token::is_keyword(const std::string &line) {
@@ -168,6 +186,30 @@ void Token::print() const {
   }
 }
 
+Token Stream::get_next(const size_t &start_index) const {
+  if (start_index + 1 >= size()) {
+    throw std::runtime_error("DEV: Out of Range");
+  }
+
+  return at(start_index + 1);
+}
+
+bool Stream::is_next(const size_t start_index, Keyword keyword) const {
+  if (start_index + 1 >= size()) {
+    return false;
+  }
+
+  return at(start_index + 1).is_given_keyword(keyword);
+}
+
+bool Stream::is_next(const size_t start_index, std::function<bool(const Token)> predicate) const {
+  if (start_index + 1 >= size()) {
+    return false;
+  }
+
+  return predicate(at(start_index + 1));
+}
+
 Peek<Token> Stream::peek(
   const size_t &start_index,
   const std::function<bool(const Token)> predicate
@@ -189,14 +231,6 @@ Peek<Token> Stream::peek(
   }
 
   return result;
-}
-
-bool Stream::is_next(const size_t start_index, Keyword keyword) const {
-  if (start_index + 1 >= size()) {
-    return false;
-  }
-
-  return at(start_index + 1).is_given_keyword(keyword);
 }
 
 void Stream::print() const {

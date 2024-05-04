@@ -73,3 +73,5 @@ val price = 999
 val price_ruble = to_ruble(price)
 
 println("in dollars: #price | in ruble: #price_ruble")
+
+val price_bonus = price_ruble / 93.51 + 100

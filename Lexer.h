@@ -18,6 +18,16 @@ enum class Operator {
   NOT,
 };
 
+enum class BinaryOperator {
+  ADD,
+  SUB,
+  MUL,
+  DIV,
+  MOD,
+  AND,
+  OR,
+};
+
 enum class Keyword {
   VAR,
   VAL,
@@ -73,6 +83,7 @@ class Token {
     static Marker get_marker(const char character);
 
     static Operator get_operator(const std::string &buffer);
+    static BinaryOperator get_binary_operator(const std::string &buffer);
 
     static Keyword get_keyword(const std::string &buffer);
 
@@ -83,6 +94,8 @@ class Token {
     static bool is_int_literal(const std::string &buffer);
 
     static bool is_operator(const std::string &buffer);
+
+    static bool is_binary_operator(const std::string &buffer);
 
     static bool is_keyword(const std::string &buffer);
 
@@ -99,9 +112,12 @@ class Stream : public std::vector<Token> {
   public:
     Stream() = default;
 
-    Peek<Token> peek(const size_t &start_index, const std::function<bool(const Token)> predicate) const;
+    Token get_next(const size_t &start_index) const;
 
+    bool is_next(const size_t start_index, std::function<bool(const Token)> predicate) const;
     bool is_next(const size_t start_index, Keyword keyword) const;
+
+    Peek<Token> peek(const size_t &start_index, const std::function<bool(const Token)> predicate) const;
 
     void print() const;
 };
