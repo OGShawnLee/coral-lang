@@ -35,6 +35,7 @@ std::map<std::string, Keyword> KEYWORD = {
   {"fn", Keyword::FUNCTION},
   {"return", Keyword::RETURN},
   {"for", Keyword::FOR},
+  {"in", Keyword::IN},
   {"if", Keyword::IF},
   {"else", Keyword::ELSE},
 };
@@ -64,6 +65,10 @@ bool Token::is_given_kind(const Kind &kind) const {
 
 bool Token::is_given_kind(const Kind &kind_a, const Kind &kind_b) const {
   return kind == kind_a or kind == kind_b;
+}
+
+bool Token::is_given_kind(const Kind &kind_a, const Kind &kind_b, const Kind &kind_c) const {
+  return kind == kind_a or kind == kind_b or kind == kind_c;
 }
 
 bool Token::is_given_keyword(const Keyword &keyword) const {
@@ -183,6 +188,14 @@ Peek<Token> Stream::peek(
   }
 
   return result;
+}
+
+bool Stream::is_next(const size_t start_index, Keyword keyword) const {
+  if (start_index + 1 >= size()) {
+    return false;
+  }
+
+  return at(start_index + 1).is_given_keyword(keyword);
 }
 
 void Stream::print() const {

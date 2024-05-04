@@ -25,6 +25,7 @@ enum class Keyword {
   FUNCTION,
   RETURN,
   FOR,
+  IN,
   IF,
   ELSE,
 };
@@ -59,6 +60,7 @@ class Token {
 
     bool is_given_kind(const Kind &kind) const;
     bool is_given_kind(const Kind &kind_a, const Kind &kind_b) const;
+    bool is_given_kind(const Kind &kind_a, const Kind &kind_b, const Kind &kind_c) const;
 
     bool is_given_keyword(const Keyword &keyword) const;
 
@@ -97,6 +99,8 @@ class Stream : public std::vector<Token> {
     Stream() = default;
 
     Peek<Token> peek(const size_t &start_index, const std::function<bool(const Token)> predicate) const;
+
+    bool is_next(const size_t start_index, Keyword keyword) const;
 
     void print() const;
 };

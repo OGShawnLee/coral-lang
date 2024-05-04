@@ -43,12 +43,16 @@ message = "#phone has a screen size of #screen_size inches"
 
 println(message)
 
-for i in 3 {
-  println("This has run for the #i time")
+for {
+  println("This will run forever!")
 }
 
 for 3 {
   println("This has run 3 times")
+}
+
+for i in 3 {
+  println("This has run for the #i time")
 }
 
 fn to_ruble(amount float) {
