@@ -62,6 +62,8 @@ std::map<char, Marker> MARKER = {
   {'(', Marker::LEFT_PARENTHESIS},
   {',', Marker::COMMA},
   {':', Marker::COLON},
+  {']', Marker::RIGHT_BRACKET},
+  {'[', Marker::LEFT_BRACKET},
 };
 
 Token::Token(const char character) {
@@ -254,6 +256,25 @@ void Stream::print() const {
   for (const Token &token : *this) token.print();
 }
 
+Peek<Token> Lexer::handle_arr_literal(const std::string &line, const size_t start_index) {
+  Peek<Token> result;
+  
+  for (size_t i = start_index + 1; i < line.size(); i++) {
+    const char character = line[i];
+
+    if (character == ']') {
+      result.data.data = "[]";
+      result.data.kind = Token::Kind::LITERAL;
+      result.end_index = i;
+      return result;
+    }
+
+    // TODO: Handle Array Conent
+  }
+
+  return result;
+}
+
 Peek<std::string> Lexer::handle_str_injection(const std::string &line, size_t start_index) {
   Peek<std::string> result;
   std::string injection;
@@ -358,6 +379,12 @@ Stream Lexer::lex_ln(std::string line) {
       switch (marker) {
         case Marker::STR_QUOTE: {
           Result result = handle_str_literal(line, i);
+          stream.push_back(result.data);
+          i = result.end_index;
+          break;
+        }
+        case Marker::LEFT_BRACKET: {
+          Peek<Token> result = handle_arr_literal(line, i);
           stream.push_back(result.data);
           i = result.end_index;
           break;

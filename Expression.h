@@ -59,3 +59,16 @@ class Object : public Expression {
 
     virtual std::string to_string(size_t indent = 0) const;
 };
+
+class Array : public Expression {
+  public:
+    std::string typing;
+
+    static bool is_arr_literal(Stream &stream, const size_t &start_index);
+
+    static PeekPtr<Array> build(Stream &stream, const size_t &start_index);
+
+    void print(size_t indent = 0) const override;
+
+    virtual std::string to_string(size_t indent = 0) const;
+};

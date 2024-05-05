@@ -100,6 +100,7 @@ struct Planet {
   system str
   galaxy str
   radius float
+  moons = []str
 
   fn get_location {
     return "#name #system #galaxy"
@@ -113,8 +114,22 @@ val planet = Planet {
   radius: 6350
 }
 
+planet:moons:push("Moon")
+
 val planet_name = planet:get_location():upper()
 
 planet:radius = planet:radius + 50.25
 
 println(planet_name)
+
+val planets = []Planet
+
+planets:push(planet)
+planets:push(Planet {
+  name: "Mars"
+  system: "Sol System"
+  galaxy: "Milky Way"
+  radius: 3500
+})
+
+println(planets)

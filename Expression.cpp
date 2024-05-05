@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include "Expression.h"
+#include "Array.cpp"
 #include "Function.cpp"
 #include "Struct.cpp"
 
@@ -41,11 +42,18 @@ PeekPtr<Expression> Expression::build(
     result.data = std::move(child.data);
     result.end_index = child.end_index;
   } else {
+    bool is_arr_literal = Array::is_arr_literal(stream, start_index);
     bool is_fn_call = Function::is_fn_call(stream, start_index);
     bool is_struct_literal = Struct::is_struct_literal(stream, start_index);
 
-    if (is_fn_call || is_struct_literal) {
-      if (is_struct_literal) {
+    if (is_arr_literal || is_fn_call || is_struct_literal) {
+      if (is_arr_literal) {
+        PeekPtr<Array> child = Array::build(stream, start_index);
+
+        result.data->value = child.data->value;
+        result.data = std::move(child.data);
+        result.end_index = child.end_index;
+      } else if (is_struct_literal) {
         PeekPtr<Object> child = Struct::build_as_struct_literal(stream, start_index);
 
         result.data->value = child.data->value;

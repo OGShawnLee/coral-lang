@@ -50,6 +50,8 @@ enum class Marker {
   LEFT_BRACE,
   RIGHT_PARENTHESIS,
   LEFT_PARENTHESIS,
+  RIGHT_BRACKET,
+  LEFT_BRACKET,
   COMMA,
   COLON,
 };
@@ -134,6 +136,8 @@ struct Result {
 
 class Lexer {
   static Token handle_buffer(std::string &buffer);
+
+  static Peek<Token> handle_arr_literal(const std::string &line, const size_t start_index);
 
   static Peek<std::string> handle_str_injection(const std::string &line, const size_t start_index);
 
