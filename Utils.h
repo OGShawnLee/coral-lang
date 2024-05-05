@@ -22,6 +22,16 @@ struct PeekPtr {
   }
 };
 
+template <typename T>
+struct PeekVectorPtr {
+  std::vector<std::unique_ptr<T>> data;
+  size_t end_index;
+
+  PeekVectorPtr() {
+    data = std::vector<std::unique_ptr<T>>();
+  }
+};
+
 void printsln(const std::string &line) {
   std::cout << line;
 }

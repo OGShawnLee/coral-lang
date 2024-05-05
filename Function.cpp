@@ -31,14 +31,18 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
 
   // fn <name> { <body> }
   if (opening.data.is_given_marker(Marker::LEFT_BRACE)) {
+    PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
+    
     result.data->name = name.data.data;
-    result.end_index = opening.end_index;
+    result.data->children = std::move(body.data);
+    result.end_index = body.end_index;
     return result;
   }
 
   // fn <name> ( <parameters> ) { <body> }
   size_t index = opening.end_index;
 
+  // Parsing Parameters
   while (index < stream.size()) {
     Peek<Token> next = stream.peek(index, [](const Token &token) {
       return 
@@ -52,9 +56,8 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
     }
 
     if (next.data.is_given_marker(Marker::RIGHT_PARENTHESIS)) {
-      result.data->name = name.data.data;
-      result.end_index = next.end_index;
-      return result;
+      index = next.end_index;
+      break;
     }
     
     PeekPtr<Variable> parameter = Variable::build_as_field(stream, index);
@@ -62,7 +65,18 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
     index = parameter.end_index;
   }
 
-  throw std::runtime_error("USER: Unterminated Function " + name.data.data + " Declaration");
+  opening = stream.peek(index, Marker::LEFT_BRACE);
+
+  if (not opening.data.is_given_marker(Marker::LEFT_BRACE)) {
+    throw std::runtime_error("USER: Expected '{' after Function Parameters");
+  }
+
+  PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
+
+  result.data->name = name.data.data;
+  result.data->children = std::move(body.data);
+  result.end_index = body.end_index;
+  return result;
 }
 
 void Function::print(size_t indent) const {
@@ -75,6 +89,16 @@ void Function::print(size_t indent) const {
 
     for (const std::unique_ptr<Variable> &parameter : parameters) {
       parameter->print(indent + 2);
+    }
+
+    println(indentation + "  ]");
+  }
+
+  if (not children.empty()) {
+    println(indentation + "  body: [");
+
+    for (const std::unique_ptr<Statement> &child : children) {
+      child->print(indent + 2);
     }
 
     println(indentation + "  ]");
