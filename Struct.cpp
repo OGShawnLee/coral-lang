@@ -131,6 +131,57 @@ void Struct::print(size_t indent) const {
   println(indentation + "}");
 }
 
+Peek<MapPtr<Expression>> Object::get_given_properties(
+  Stream &stream,
+  const size_t &start_index,
+  const std::vector<std::string> &properties
+) {
+  Peek<MapPtr<Expression>> result;
+
+  Peek<Token> open_brace = stream.peek(start_index, Marker::LEFT_BRACE);
+
+  size_t index = open_brace.end_index;
+
+   while (index < stream.size()) {
+    Peek<Token> next = stream.peek(index, [](const Token &token) {
+      return 
+        token.is_given_marker(Marker::RIGHT_BRACE, Marker::COMMA) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER);
+    });
+
+    if (next.data.is_given_marker(Marker::COMMA)) {
+      index = next.end_index;
+      continue;
+    }
+
+    if (next.data.is_given_marker(Marker::RIGHT_BRACE)) {
+      result.end_index = next.end_index;
+      return result;
+    }
+
+    PeekPtr<Variable> property = Variable::build_as_property(stream, index);
+
+    // Check for Unknown Properties
+    if (not Utils::included(properties, property.data->name)) {
+      throw std::runtime_error("USER: Unknown Property " + property.data->name);
+    }
+
+    // Prevent Duplicate Properties
+    if (Utils::has_key(result.data, property.data->name)) {
+      throw std::runtime_error("USER: Duplicate Property " + property.data->name);
+    }
+
+    result.data.insert({
+      property.data->name, 
+      std::move(property.data->value)
+    });  
+
+    index = property.end_index;
+  }
+
+  throw std::runtime_error("USER: Unterminated Struct Literal Declaration");
+}
+
 void Object::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "Struct Literal {");

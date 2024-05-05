@@ -4,6 +4,9 @@
 #include "Variable.h"
 #include "Statement.h"
 
+template <typename T>
+using MapPtr = std::map<std::string, std::unique_ptr<T>>;
+
 class Variable;
 
 class Expression : public Statement {
@@ -55,6 +58,12 @@ class Object : public Expression {
     std::string name;
     std::vector<std::unique_ptr<Variable>> properties;
 
+    static Peek<MapPtr<Expression>> get_given_properties(
+      Stream &stream,
+      const size_t &start_index,
+      const std::vector<std::string> &properties
+    );
+
     void print(size_t indent = 0) const override;
 
     virtual std::string to_string(size_t indent = 0) const;
@@ -63,6 +72,8 @@ class Object : public Expression {
 class Array : public Expression {
   public:
     std::string typing;
+    std::unique_ptr<Expression> len;
+    std::unique_ptr<Expression> init;
 
     static bool is_arr_literal(Stream &stream, const size_t &start_index);
 

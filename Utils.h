@@ -3,6 +3,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -41,6 +42,16 @@ void println(const std::string &line) {
 }
 
 namespace Utils {
+  template <typename T>
+  bool included(const std::vector<T> &vector, const T &element) {
+    return std::find(vector.begin(), vector.end(), element) != vector.end();
+  }
+
+  template <typename T>
+  bool has_key(const std::map<std::string, T> &map, const std::string &key) {
+    return map.find(key) != map.end();
+  }
+
   bool is_whitespace(char character) {
     return character == ' ' || character == '\t' || character == '\n';
   }

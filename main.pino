@@ -133,3 +133,18 @@ planets:push(Planet {
 })
 
 println(planets)
+
+var numbers = []int { len: 12, init: it + 3 }
+
+println(numbers)
+
+for number in numbers {
+  println(number)
+}
+
+numbers = []int {
+  len: numbers:len
+  init: it + 10 * 3
+} 
+
+println(numbers)
