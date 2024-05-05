@@ -230,10 +230,24 @@ Peek<Token> Stream::peek(
   } else {
     println("Unexpected Token: ");
     result.data.print();
+    println("Previous Token");
+    at(start_index).print();
     throw std::runtime_error("DEV: Unexepected Token");
   }
 
   return result;
+}
+
+Peek<Token> Stream::peek(const size_t &start_index, Token::Kind kind) const {
+  return peek(start_index, [kind](const Token &token) {
+    return token.is_given_kind(kind);
+  });
+}
+
+Peek<Token> Stream::peek(const size_t &start_index, Marker marker) const {
+  return peek(start_index, [marker](const Token &token) {
+    return token.is_given_marker(marker);
+  });
 }
 
 void Stream::print() const {

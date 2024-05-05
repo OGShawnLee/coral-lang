@@ -61,6 +61,20 @@ PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_i
   return result;
 }
 
+PeekPtr<Variable> Variable::build_as_property(Stream &stream, const size_t &start_index) {
+  PeekPtr<Variable> result;
+  
+  Peek<Token> name = stream.peek(start_index, Token::Kind::IDENTIFIER);
+  Peek<Token> colon = stream.peek(name.end_index, Marker::COLON);
+
+  PeekPtr<Expression> value = Expression::build(stream, colon.end_index);
+
+  result.data->name = name.data.data;
+  result.data->value = std::move(value.data);
+  result.end_index = value.end_index;
+  return result;
+}
+
 void Variable::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
 

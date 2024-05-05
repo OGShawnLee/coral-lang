@@ -3,6 +3,9 @@
 #include "Utils.h"
 #include "Expression.h"
 #include "Function.cpp"
+#include "Struct.cpp"
+
+class Variable;
 
 std::map<Expression::Type, std::string> EXPRESSION_TYPE_NAME = {
   {Expression::Type::LITERAL, "Literal"},
@@ -38,6 +41,16 @@ PeekPtr<Expression> Expression::build(
     result.data = std::move(child.data);
     result.end_index = child.end_index;
   } else {
+    if (Struct::is_struct_literal(stream, start_index)) {
+      PeekPtr<Object> child = Struct::build_as_struct_literal(stream, start_index);
+
+      result.data->value = child.data->value;
+      result.data = std::move(child.data);
+      result.end_index = child.end_index;
+
+      return result;
+    }
+
     if (Function::is_fn_call(stream, start_index)) {
       PeekPtr<Expression> child = Function::build_as_fn_call(stream, start_index);
       

@@ -121,6 +121,8 @@ class Stream : public std::vector<Token> {
     bool is_next(const size_t start_index, Keyword keyword) const;
 
     Peek<Token> peek(const size_t &start_index, const std::function<bool(const Token)> predicate) const;
+    Peek<Token> peek(const size_t &start_index, Token::Kind kind) const;
+    Peek<Token> peek(const size_t &start_index, Marker marker) const;
 
     void print() const;
 };

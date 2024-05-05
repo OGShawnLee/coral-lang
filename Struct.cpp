@@ -3,6 +3,18 @@
 #include "Utils.h"
 #include "Struct.h"
 
+bool Struct::is_struct_literal(const Stream &stream, const size_t &start_index) {
+  return 
+    // prevent matching <keyword> <identifier< {}  
+    not stream.at(start_index).is_given_kind(Token::Kind::KEYWORD) &&
+    stream.is_next(start_index, [](const Token &token) {
+      return token.is_given_kind(Token::Kind::IDENTIFIER);
+    }) &&
+    stream.is_next(start_index + 1, [](const Token &token) {
+      return token.is_given_marker(Marker::LEFT_BRACE);
+    });
+}
+
 PeekPtr<Struct> Struct::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Struct> result;
 
@@ -45,6 +57,40 @@ PeekPtr<Struct> Struct::build(Stream &stream, const size_t &start_index) {
   throw std::runtime_error("USER: Unterminated Struct " + name.data.data + " Declaration");
 }
 
+PeekPtr<Object> Struct::build_as_struct_literal(Stream &stream, const size_t &start_index) {
+  PeekPtr<Object> result;
+
+  Peek<Token> name = stream.peek(start_index, Token::Kind::IDENTIFIER);
+  Peek<Token> brace = stream.peek(name.end_index, Marker::LEFT_BRACE);
+
+  size_t index = brace.end_index;
+
+  while (index < stream.size()) {
+    Peek<Token> next = stream.peek(index, [](const Token &token) {
+      return 
+        token.is_given_marker(Marker::RIGHT_BRACE, Marker::COMMA) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER);
+    });
+
+    if (next.data.is_given_marker(Marker::COMMA)) {
+      index = next.end_index;
+      continue;
+    }
+
+    if (next.data.is_given_marker(Marker::RIGHT_BRACE)) {
+      result.data->name = name.data.data;
+      result.end_index = next.end_index;
+      return result;
+    }
+
+    PeekPtr<Variable> property = Variable::build_as_property(stream, index);
+    result.data->properties.push_back(std::move(property.data));
+    index = property.end_index;
+  }
+
+  return result;
+}
+
 void Struct::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "Struct {");
@@ -57,4 +103,33 @@ void Struct::print(size_t indent) const {
 
   println(indentation + "  ]");
   println(indentation + "}");
+}
+
+void Object::print(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+  println(indentation + "Struct Literal {");
+  println(indentation + "  name: " + name);
+  println(indentation + "  properties: [");
+
+  for (const std::unique_ptr<Variable> &field : properties) {
+    field->print(indent + 2);
+  }
+
+  println(indentation + "  ]");
+  println(indentation + "}");
+}
+
+std::string Object::to_string(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+  std::string result = "Struct Literal {\n";
+  result += indentation + "  name: " + name + "\n";
+  result += indentation + "  properties: [\n";
+
+  for (const std::unique_ptr<Variable> &field : properties) {
+    result += "    " + indentation + field->name + ": " + field->value->to_string(indent + 2) + "\n";
+  }
+
+  result += indentation + "  ]\n";
+  result += indentation + "}\n";
+  return result;
 }

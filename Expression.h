@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Utils.h"
+#include "Variable.h"
 #include "Statement.h"
+
+class Variable;
 
 class Expression : public Statement {
   public:
@@ -36,6 +39,17 @@ class BinaryExpression : public Expression {
     static bool is_binary_expression(Stream &stream, const size_t &start_index);
 
     static PeekPtr<BinaryExpression> build(Stream &stream, const size_t &start_index);
+
+    void print(size_t indent = 0) const override;
+
+    virtual std::string to_string(size_t indent = 0) const;
+};
+
+// Struct Literal
+class Object : public Expression {
+  public:
+    std::string name;
+    std::vector<std::unique_ptr<Variable>> properties;
 
     void print(size_t indent = 0) const override;
 
