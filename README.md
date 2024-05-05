@@ -33,6 +33,13 @@ fn get_message(
     return "#name lives in planet #planet and is not married"    
   }
 }
+
+# Optinal Commas
+get_message(
+  "Shawn Lee"
+  "Mars"
+  false
+)
 ```
 
 ## Enum and Struct
@@ -55,4 +62,22 @@ struct Person {
   planet = "Earth" # Default Value
   hair Hair
 }
+
+# Optional Commas
+var character = Person {
+  name: "Shawn Lee"
+  country: "China"
+  hair: Hair:MEDIUM # Enum Accessing (might change in favour of double colon operator)
+}
+
+# Property Accessing (might change in favour of dot operator)
+println(character:name, character:country)
+
+var character = Person {
+  name: "Julia Lee",
+  country: "France",
+  hair: Hair:LONG,
+}
+
+println(character)
 ```
