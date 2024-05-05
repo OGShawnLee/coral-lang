@@ -8,7 +8,7 @@ bool Struct::is_struct_literal(const Stream &stream, const size_t &start_index) 
     // prevent matching <keyword> <identifier< {}  
     not stream.at(start_index).is_given_kind(Token::Kind::KEYWORD) &&
     stream.is_next(start_index, [](const Token &token) {
-      return token.is_given_kind(Token::Kind::IDENTIFIER);
+      return token.is_given_kind(Token::Kind::IDENTIFIER) && isupper(token.data[0]);
     }) &&
     stream.is_next(start_index + 1, [](const Token &token) {
       return token.is_given_marker(Marker::LEFT_BRACE);
@@ -26,6 +26,12 @@ PeekPtr<Struct> Struct::build(Stream &stream, const size_t &start_index) {
   Peek<Token> name = stream.peek(start_index, [](const Token &token) {
     return token.is_given_kind(Token::Kind::IDENTIFIER);
   });
+
+  if (not isupper(name.data.data[0])) {
+    throw std::runtime_error(
+      "USER: Struct name must start with an uppercase letter (" + name.data.data + ")"
+    );
+  }
 
   Peek<Token> open_brace = stream.peek(name.end_index, [](const Token &token) {
     return token.is_given_marker(Marker::LEFT_BRACE);
