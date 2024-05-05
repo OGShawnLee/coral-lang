@@ -16,8 +16,11 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
   
   // for {}
   if (next.data.is_given_marker(Marker::LEFT_BRACE)) {
+    PeekVectorPtr<Statement> body = Parser::build_block(stream, next.end_index);
+
     result.data->variant = For::Variant::INFINITE;
-    result.end_index = next.end_index;
+    result.data->children = std::move(body.data);
+    result.end_index = body.end_index;
     return result;
   }
 
@@ -38,6 +41,10 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
     result.data->variant = For::Variant::TIMES;
   }
 
+  PeekVectorPtr<Statement> body = Parser::build_block(stream, result.end_index + 1);
+  result.data->children = std::move(body.data);
+  result.end_index = body.end_index;
+
   return result;
 }
 
@@ -54,5 +61,12 @@ void For::print(size_t indent) const {
     println(indentation + "  limit: " + limit);
     println(indentation + "  variant: For");
   }
+
+  if (not children.empty()) {
+    println(indentation + "  children: [");
+    for (const auto &child : children) child->print(indent + 2);
+    println(indentation + "  ]");
+  }
+
   println(indentation + "}");
 }
