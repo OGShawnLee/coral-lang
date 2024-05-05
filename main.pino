@@ -94,3 +94,27 @@ fn to_credits(amount int) {
 }
 
 var credits = to_credits(10)
+
+struct Planet {
+  name str
+  system str
+  galaxy str
+  radius float
+
+  fn get_location {
+    return "#name #system #galaxy"
+  }
+}
+
+val planet = Planet {
+  name: "Earth"
+  system: "Sol System"
+  galaxy: "Milky Way"
+  radius: 6350
+}
+
+val planet_name = planet:get_location():upper()
+
+planet:radius = planet:radius + 50.25
+
+println(planet_name)

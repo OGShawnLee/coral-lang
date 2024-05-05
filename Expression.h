@@ -38,7 +38,11 @@ class BinaryExpression : public Expression {
 
     static bool is_binary_expression(Stream &stream, const size_t &start_index);
 
-    static PeekPtr<BinaryExpression> build(Stream &stream, const size_t &start_index);
+    static PeekPtr<BinaryExpression> build(
+      Stream &stream, 
+      const size_t &start_index,
+      const bool &with_left = true 
+    );
 
     void print(size_t indent = 0) const override;
 

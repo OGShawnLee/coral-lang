@@ -41,25 +41,39 @@ PeekPtr<Expression> Expression::build(
     result.data = std::move(child.data);
     result.end_index = child.end_index;
   } else {
-    if (Struct::is_struct_literal(stream, start_index)) {
-      PeekPtr<Object> child = Struct::build_as_struct_literal(stream, start_index);
+    bool is_fn_call = Function::is_fn_call(stream, start_index);
+    bool is_struct_literal = Struct::is_struct_literal(stream, start_index);
 
-      result.data->value = child.data->value;
-      result.data = std::move(child.data);
-      result.end_index = child.end_index;
+    if (is_fn_call || is_struct_literal) {
+      if (is_struct_literal) {
+        PeekPtr<Object> child = Struct::build_as_struct_literal(stream, start_index);
+
+        result.data->value = child.data->value;
+        result.data = std::move(child.data);
+        result.end_index = child.end_index;
+      } else {
+        PeekPtr<Expression> child = Function::build_as_fn_call(stream, start_index);
+
+        result.data->value = child.data->value;
+        result.data = std::move(child.data);
+        result.end_index = child.end_index;
+      }
+
+      // <fn call/struct literal> <operator> <expression>
+      bool is_incomplete = stream.is_next(result.end_index, [](const Token token) {
+        return Token::is_binary_operator(token.data);
+      });
+
+      if (is_incomplete) {
+        PeekPtr<BinaryExpression> binary = BinaryExpression::build(stream, result.end_index, false);
+
+        binary.data->left = std::move(result.data);
+        result.data = std::move(binary.data);
+        result.end_index = binary.end_index;
+      }
 
       return result;
     }
-
-    if (Function::is_fn_call(stream, start_index)) {
-      PeekPtr<Expression> child = Function::build_as_fn_call(stream, start_index);
-      
-      result.data->value = child.data->value;
-      result.data = std::move(child.data);
-      result.end_index = child.end_index;
-
-      return result;
-    } 
 
     Token next = stream.get_next(start_index);
 
@@ -127,15 +141,21 @@ bool BinaryExpression::is_binary_expression(Stream &stream, const size_t &start_
   });
 }
 
-PeekPtr<BinaryExpression> BinaryExpression::build(Stream &stream, const size_t &start_index) {
+PeekPtr<BinaryExpression> BinaryExpression::build(
+  Stream &stream, 
+  const size_t &start_index,
+  const bool &with_left
+) {
   PeekPtr<BinaryExpression> result;
 
-  PeekPtr<Expression> left = Expression::build(stream, start_index, false);
-  result.data->value = left.data->value;
-  result.data->left = std::move(left.data);
-  result.end_index = left.end_index;
+  if (with_left) {
+    PeekPtr<Expression> left = Expression::build(stream, start_index, false);
+    result.data->value = left.data->value;
+    result.data->left = std::move(left.data);
+    result.end_index = left.end_index;
+  }
 
-  Peek<Token> operation = stream.peek(start_index + 1, [](const Token token) {
+  Peek<Token> operation = stream.peek(start_index + with_left, [](const Token token) {
     return Token::is_binary_operator(token.data);
   });
 
