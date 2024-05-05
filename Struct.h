@@ -9,6 +9,7 @@ class Struct : public Statement {
     Kind kind = Kind::STATEMENT;
     std::string name;
     std::vector<std::unique_ptr<Variable>> fields;
+    std::vector<std::unique_ptr<Function>> methods;
 
     static bool is_struct_literal(const Stream &stream, const size_t &start_index);
 

@@ -12,6 +12,15 @@ struct Person {
   country str
   planet = "Earth"
   hair = Hair:SHORT
+
+  fn greet {
+    println("Hello, #name!")
+  }
+
+  fn travel(destination str, speed float) {
+    println("#name is moving to #destination at a speed of #speed km/h")
+    country = destination
+  }
 }
 
 val name = "Shawn Lee"
@@ -26,6 +35,8 @@ var character = Person {
 
 println(character:name, character:country)
 
+character:greet()
+character:travel("Russia", 945.75)
 character = Person {
   name: "James Lee"
   country: "France"

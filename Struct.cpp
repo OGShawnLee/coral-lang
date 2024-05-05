@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils.h"
+#include "Function.cpp"
 #include "Struct.h"
 
 bool Struct::is_struct_literal(const Stream &stream, const size_t &start_index) {
@@ -41,8 +42,18 @@ PeekPtr<Struct> Struct::build(Stream &stream, const size_t &start_index) {
 
   while (index < stream.size()) {
     Peek<Token> next = stream.peek(index, [](const Token &token) {
-      return token.is_given_marker(Marker::RIGHT_BRACE) || token.is_given_kind(Token::Kind::IDENTIFIER);
+      return 
+        token.is_given_marker(Marker::RIGHT_BRACE) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER) ||
+        token.is_given_keyword(Keyword::FUNCTION);
     });
+
+    if (next.data.is_given_keyword(Keyword::FUNCTION)) {
+      PeekPtr<Function> method = Function::build(stream, next.end_index);
+      result.data->methods.push_back(std::move(method.data));
+      index = method.end_index;
+      continue;
+    }
 
     if (next.data.is_given_marker(Marker::RIGHT_BRACE)) {
       result.data->name = name.data.data;
@@ -105,6 +116,15 @@ void Struct::print(size_t indent) const {
 
   for (const std::unique_ptr<Variable> &field : fields) {
     field->print(indent + 2);
+  }
+
+  if (not methods.empty()) {
+    println(indentation + "  ]");
+    println(indentation + "  methods: [");
+
+    for (const std::unique_ptr<Function> &method : methods) {
+      method->print(indent + 2);
+    }
   }
 
   println(indentation + "  ]");
