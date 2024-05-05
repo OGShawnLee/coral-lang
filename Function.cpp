@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include "Function.h"
+#include "Parser.h"
 
 bool Function::is_fn_call(Stream &stream, const size_t &start_index) {
   return 
@@ -66,10 +67,6 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   }
 
   opening = stream.peek(index, Marker::LEFT_BRACE);
-
-  if (not opening.data.is_given_marker(Marker::LEFT_BRACE)) {
-    throw std::runtime_error("USER: Expected '{' after Function Parameters");
-  }
 
   PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
 

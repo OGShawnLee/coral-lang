@@ -1,6 +1,7 @@
 #pragma once
 
 #include "For.h"
+#include "Parser.h"
 
 PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
   PeekPtr<For> result;

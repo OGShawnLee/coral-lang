@@ -8,6 +8,7 @@
 #include "Function.cpp"
 #include "Struct.cpp"
 #include "Variable.cpp"
+#include "ControlFlow.cpp"
 
 PeekVectorPtr<Statement> Parser::build_block(
   Stream &stream, 
@@ -44,6 +45,16 @@ PeekVectorPtr<Statement> Parser::build_block(
         PeekPtr<Function> function = Function::build(stream, i);
         block.data.push_back(std::move(function.data));
         i = function.end_index;
+      }
+
+      if (keyword == Keyword::IF) {
+        PeekPtr<IF> condition = IF::build(stream, i);
+        block.data.push_back(std::move(condition.data));
+        i = condition.end_index;
+      } 
+
+      if (keyword == Keyword::ELSE) {
+        throw std::runtime_error("USER: Unpaired 'else' keyword");
       }
 
       if (keyword == Keyword::STRUCT) {
