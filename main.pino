@@ -1,7 +1,3 @@
-val name = "Shawn Lee"
-val country = "China"
-var message = "#name lives in #country"
-
 enum Hair {
   BALD 
   VERY_SHORT 
@@ -15,11 +11,18 @@ struct Person {
   name str
   country str
   planet = "Earth"
-  hair Hair
+  hair = Hair:SHORT
 }
 
+val name = "Shawn Lee"
+val name_upper = name:to_upper()
+var is_married = false
+var children = 0
+
+children = children + 1
+
 fn print {
-  println("What is going on?")
+  println("Fn with no parenthesis")
 }
 
 fn greet(name str, is_human = true) {
@@ -38,43 +41,26 @@ fn get_message(
   return "#name lives in #country on #planet"
 }
 
-val model = 15
-val screen_size = 6.1
-val phone = "iPhone #model"
-val is_premium = true
-
-if is_premium {
-  println("Phone is premium")
-} else {
-  println("Phone is not premium")
-}
-
-message = "#phone has a screen size of #screen_size inches"
-
-println(message)
+val amount = 10
 
 for {
   println("This will run forever!")
 }
 
-for 3 {
-  println("This has run 3 times")
+for amount {
+  println("This has run for #amount times")
 }
 
-for i in 3 {
-  println("This has run for the #i time")
+for 1 {
+  println("This will run once")
 }
 
-fn to_ruble(amount float) {
-  return amount * 93.51 
+for i in amount {
+  println("This has run for the #amount time")
 }
 
-val price = 999
-val price_ruble = to_ruble(price)
+fn to_credits(amount int) {
+  return amount * 10.85
+}
 
-println("in dollars: #price | in ruble: #price_ruble")
-
-val price_bonus = price_ruble / 93.51 + 100
-val string = name:concat(
-  get_message(name, country, false)
-)
+var credits = to_credits(10)

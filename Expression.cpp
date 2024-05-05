@@ -15,7 +15,6 @@ std::map<Expression::Type, std::string> EXPRESSION_TYPE_NAME = {
 
 bool Expression::is_expression(Stream &stream, const size_t &start_index) {
   return 
-    Function::is_fn_call(stream, start_index) ||
     stream.is_next(start_index, [](const Token token) {
       return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
     }) || 
@@ -64,22 +63,42 @@ PeekPtr<Expression> Expression::build(
 void Expression::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
 
+  if (type == Type::FUNCTION_CALL) {
+    println(indentation + "Function Call {");
+    println(indentation + "  name: " + value);
+    
+    if (not arguments.empty()) {
+      println(indentation + "  arguments: [");
+      for (const std::unique_ptr<Expression> &argument : arguments) {
+        argument->print(indent + 2);
+      }
+      println(indentation + "  ]");
+    }
+
+    println(indentation + "}");
+    return;
+  }
+
   println(indentation + "Expression {");
   println(indentation + "  value: " + value);
   println(indentation + "}");
 }
 
 std::string Expression::to_string(size_t indent) const {
-  if (type == Type::FUNCTION_CALL && arguments.size() > 0) {
+  if (type == Type::FUNCTION_CALL) {
     std::string indentation = Utils::get_indent(indent);
     std::string result = "Function Call {\n";
 
     result += indentation + "  name: " + value + "\n";
-    result += indentation + "  arguments: [\n";
-    for (const std::unique_ptr<Expression> &argument : arguments) {
-      result += indentation + "    " + argument->to_string(indent + 2) + "\n";
+    
+    if (not arguments.empty()) {
+      result += indentation + "  arguments: [\n";
+      for (const std::unique_ptr<Expression> &argument : arguments) {
+        result += indentation + "    " + argument->to_string(indent + 2) + "\n";
+      }
+      result += indentation + "  ]\n";
     }
-    result += indentation + "  ]\n";
+
     result += indentation + "}";
     return result;
   }
@@ -134,7 +153,7 @@ void BinaryExpression::print(size_t indent) const {
   
   if (type != Expression::Type::BINARY) {
     std::string name = EXPRESSION_TYPE_NAME.at(type);
-    println(indentation + "  type: " + name + "\n");
+    println(indentation + "  type: " + name);
   }  
 
   println(indentation + "  left: " + left->to_string(indent + 1));

@@ -17,6 +17,14 @@ Statement Parser::parse(const std::string &file_path) {
   for (size_t i = 0; i < stream.size(); i++) {
     Token token = stream[i];
 
+    if (token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL)) {
+      if (Expression::is_expression(stream, i - 1)) {
+        PeekPtr<Expression> expression = Expression::build(stream, i - 1);
+        program.children.push_back(std::move(expression.data));
+        i = expression.end_index;
+      }
+    }
+
     if (token.kind == Token::Kind::KEYWORD) {
       Keyword keyword = Token::get_keyword(token.data);
 
