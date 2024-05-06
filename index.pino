@@ -1,0 +1,173 @@
+enum Hair {
+  BALD 
+  VERY_SHORT 
+  SHORT
+  MEDIUM
+  LONG
+  VERY_LONG
+}
+
+struct Person {
+  name str
+  country str
+  planet = "Earth"
+  hair = Hair:SHORT
+
+  fn greet {
+    println("Hello, #name!")
+  }
+
+  fn travel(destination str, speed float) {
+    println("#name is moving to #destination at a speed of #speed km/h")
+    country = destination
+  }
+}
+
+val name = "Shawn Lee"
+val name_upper = name:to_upper()
+var is_married = false
+var children = 0
+var character = Person {
+  name: name
+  country: "China"
+  hair: Hair:SHORT
+}
+
+println(character:name, character:country)
+
+character:greet()
+character:travel("Russia", 945.75)
+character = Person {
+  name: "James Lee"
+  country: "France"
+  hair: Hair:LONG
+}
+
+println(character:name, character:country)
+
+character:name = "Julia Lee"
+
+println(character)
+
+children = children + 1
+
+fn print {
+  println("Fn with no parenthesis")
+}
+
+fn greet(name str, is_human = true) {
+  if is_human {
+    println("Hello, #name!")
+  } else {
+    println("Greetings, creature named #name?")
+  }
+}
+
+fn get_message(
+  name str 
+  country str 
+  planet = "Earth"
+) {
+  return "#name lives in #country on #planet"
+}
+
+val amount = 10
+
+for {
+  println("This will run forever!")
+}
+
+for amount {
+  println("This has run for #amount times")
+}
+
+for 1 {
+  println("This will run once")
+}
+
+for i in amount {
+  println("This has run for the #amount time")
+}
+
+fn to_credits(amount int) {
+  return amount * 10.85
+}
+
+var credits = to_credits(10)
+
+struct Planet {
+  name str
+  system str
+  galaxy str
+  radius float
+  moons = []str
+
+  fn get_location {
+    return "#name #system #galaxy"
+  }
+}
+
+val planet = Planet {
+  name: "Earth"
+  system: "Sol System"
+  galaxy: "Milky Way"
+  radius: 6350
+}
+
+planet:moons:push("Moon")
+
+val planet_name = planet:get_location():upper()
+
+planet:radius = planet:radius + 50.25
+
+println(planet_name)
+
+val planets = []Planet
+
+planets:push(planet)
+planets:push(Planet {
+  name: "Mars"
+  system: "Sol System"
+  galaxy: "Milky Way"
+  radius: 3500
+})
+
+println(planets)
+
+var numbers = []int { len: 12, init: it + 3 }
+
+println(numbers)
+
+for number in numbers {
+  println(number)
+}
+
+numbers = []int {
+  len: numbers:len
+  init: numbers:at(it) * 3
+} 
+
+println(numbers)
+
+numbers = numbers:map(it * 3)
+
+fn map(array arr, function fun) {
+  return []any {
+    len: arr:len
+    init: fun(arr:at(it), it)
+  }
+}
+
+val numbers_str = map(numbers, fn (num int, i int) {
+  return "#i: #num"
+})
+
+println(numbers_str)
+
+val printing = fn {
+  println("Lambda with no parameters")
+}
+
+fn {
+  println("You have been greeted!")
+}

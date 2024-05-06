@@ -15,6 +15,7 @@ class For : public Statement {
       // for {}
     };
 
+    Type type = Type::LOOP_STATEMENT;
     std::string index;
     std::string limit;
     Variant variant;

@@ -306,6 +306,7 @@ Result Lexer::handle_str_literal(const std::string &line, size_t start_index) {
 
     if (character == '"') {
       result.data.kind = Token::Kind::LITERAL;
+      result.data.literal = Token::Literal::STRING;
       result.data.data = std::move(literal);
       result.end_index = i;
       return result;
@@ -338,12 +339,18 @@ Token Lexer::handle_buffer(std::string &buffer) {
     token.kind = Token::Kind::OPERATOR;
   } else if (Token::is_keyword(buffer)) {
     token.kind = Token::Kind::KEYWORD;
-  } else if (
-    is_bool_literal(buffer) or
-    is_float_literal(buffer) or
-    is_int_literal(buffer)
-  ) {
-    token.kind = Token::Kind::LITERAL;  
+  } else if (is_bool_literal(buffer)) {
+    token.kind = Token::Kind::LITERAL;
+    token.literal = Token::Literal::BOOLEAN;
+    token.data = buffer;
+  } else if (is_float_literal(buffer)) {
+    token.kind = Token::Kind::LITERAL;
+    token.literal = Token::Literal::FLOAT;
+    token.data = buffer;
+  } else if (is_int_literal(buffer)) {
+    token.kind = Token::Kind::LITERAL;
+    token.literal = Token::Literal::INTEGER;
+    token.data = buffer;
   } else {
     token.kind = Token::Kind::IDENTIFIER;
   }

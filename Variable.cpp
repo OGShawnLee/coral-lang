@@ -4,6 +4,11 @@
 #include "Expression.cpp"
 #include "Variable.h"
 
+Variable::Variable() {
+  type = Type::VARIABLE_DECLARATION;
+  kind = Kind::STATEMENT;
+}
+
 PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Variable> result;
 

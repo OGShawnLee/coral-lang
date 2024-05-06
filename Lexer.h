@@ -68,8 +68,16 @@ class Token {
       KEYWORD,
     };
 
+    enum class Literal {
+      BOOLEAN,
+      INTEGER,
+      STRING,
+      FLOAT,
+    };
+
     std::string data;
     Kind kind;
+    Literal literal;
     std::vector<std::string> injections;
 
     Token() = default;

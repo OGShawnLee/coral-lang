@@ -11,7 +11,7 @@ class Variable;
 
 class Expression : public Statement {
   public:
-    enum class Type {
+    enum class Variant {
       BINARY,
         ASSIGNMENT,
         PROPERTY_ACCESS,
@@ -20,9 +20,12 @@ class Expression : public Statement {
       IDENTIFIER,
     };
 
-    Type type;
+    Variant variant;
+    Token::Literal literal;
     std::string value;
     std::vector<std::unique_ptr<Expression>> arguments;
+
+    Expression();
 
     static bool is_expression(Stream &stream, const size_t &start_index);
 

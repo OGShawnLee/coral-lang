@@ -8,14 +8,18 @@
 
 class Variable;
 
-std::map<Expression::Type, std::string> EXPRESSION_TYPE_NAME = {
-  {Expression::Type::LITERAL, "Literal"},
-  {Expression::Type::IDENTIFIER, "Identifier"},
-  {Expression::Type::BINARY, ""},
-  {Expression::Type::ASSIGNMENT, "Assignment"},
-  {Expression::Type::FUNCTION_CALL, "Function Call"},
-  {Expression::Type::PROPERTY_ACCESS, "Property Access"},
+std::map<Expression::Variant, std::string> EXPRESSION_TYPE_NAME = {
+  {Expression::Variant::LITERAL, "Literal"},
+  {Expression::Variant::IDENTIFIER, "Identifier"},
+  {Expression::Variant::BINARY, ""},
+  {Expression::Variant::ASSIGNMENT, "Assignment"},
+  {Expression::Variant::FUNCTION_CALL, "Function Call"},
+  {Expression::Variant::PROPERTY_ACCESS, "Property Access"},
 };
+
+Expression::Expression() {
+  kind = Kind::EXPRESSION;
+}
 
 bool Expression::is_expression(Stream &stream, const size_t &start_index) {
   return 
@@ -96,8 +100,9 @@ PeekPtr<Expression> Expression::build(
 
     Token next = stream.get_next(start_index);
 
-    result.data->type = 
-      next.kind == Token::Kind::IDENTIFIER ? Type::IDENTIFIER : Type::LITERAL;
+    result.data->variant = 
+      next.kind == Token::Kind::IDENTIFIER ? Variant::IDENTIFIER : Variant::LITERAL;
+    result.data->literal = next.literal;
 
     result.data->value = next.data;
     result.end_index = start_index + 1;
@@ -109,7 +114,7 @@ PeekPtr<Expression> Expression::build(
 void Expression::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
 
-  if (type == Type::FUNCTION_CALL) {
+  if (variant == Variant::FUNCTION_CALL) {
     println(indentation + "Function Call {");
     println(indentation + "  name: " + value);
     
@@ -131,7 +136,7 @@ void Expression::print(size_t indent) const {
 }
 
 std::string Expression::to_string(size_t indent) const {
-  if (type == Type::FUNCTION_CALL) {
+  if (variant == Variant::FUNCTION_CALL) {
     std::string indentation = Utils::get_indent(indent);
     std::string result = "Function Call {\n";
 
@@ -149,7 +154,7 @@ std::string Expression::to_string(size_t indent) const {
     return result;
   }
 
-  return EXPRESSION_TYPE_NAME.at(type) + " { " + value + " }";
+  return EXPRESSION_TYPE_NAME.at(variant) + " { " + value + " }";
 }
 
 bool BinaryExpression::is_binary_expression(Stream &stream, const size_t &start_index) {
@@ -179,11 +184,11 @@ PeekPtr<BinaryExpression> BinaryExpression::build(
   });
 
   if (operation.data.data == "=") {
-    result.data->type = Expression::Type::ASSIGNMENT;
+    result.data->variant = Expression::Variant::ASSIGNMENT;
   } else if (operation.data.data == ":") {
-    result.data->type = Expression::Type::PROPERTY_ACCESS;
+    result.data->variant = Expression::Variant::PROPERTY_ACCESS;
   } else {
-    result.data->type = Expression::Type::BINARY;
+    result.data->variant = Expression::Variant::BINARY;
   }
 
   result.data->operation = operation.data.data;
@@ -203,9 +208,9 @@ void BinaryExpression::print(size_t indent) const {
 
   println(indentation + "Binary Expression {");
   
-  if (type != Expression::Type::BINARY) {
-    std::string name = EXPRESSION_TYPE_NAME.at(type);
-    println(indentation + "  type: " + name);
+  if (variant != Expression::Variant::BINARY) {
+    std::string name = EXPRESSION_TYPE_NAME.at(variant);
+    println(indentation + "  variant: " + name);
   }  
 
   println(indentation + "  left: " + left->to_string(indent + 1));
@@ -220,9 +225,9 @@ std::string BinaryExpression::to_string(size_t indent) const {
 
   result += "Binary Expression {\n";
   
-  if (type != Expression::Type::BINARY) {
-    std::string name = EXPRESSION_TYPE_NAME.at(type);
-    result += indentation + "  type: " + name + "\n";
+  if (variant != Expression::Variant::BINARY) {
+    std::string name = EXPRESSION_TYPE_NAME.at(variant);
+    result += indentation + "  variant: " + name + "\n";
   }
 
   result += indentation + "  left: " + left->to_string(indent + 1) + "\n";

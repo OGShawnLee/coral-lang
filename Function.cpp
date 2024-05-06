@@ -4,6 +4,10 @@
 #include "Function.h"
 #include "Parser.h"
 
+Function::Function() {
+  type = Type::FUNCTION_DECLARATION;
+}
+
 bool Function::is_fn_call(Stream &stream, const size_t &start_index) {
   return 
     stream.is_next(start_index, [](const Token &token) {
@@ -191,7 +195,8 @@ PeekPtr<Expression> Function::build_as_fn_call(Stream &stream, const size_t &sta
     }
 
     if (next.is_given_marker(Marker::RIGHT_PARENTHESIS)) {
-      result.data->type = Expression::Type::FUNCTION_CALL;
+      result.data->kind = Kind::EXPRESSION;
+      result.data->variant = Expression::Variant::FUNCTION_CALL;
       result.end_index = index + 1;
       return result;
     }

@@ -8,6 +8,10 @@ std::map<Statement::Kind, std::string> KIND_NAME = {
   {Statement::Kind::STATEMENT, "Statement"},
 }; 
 
+Statement::Statement() {
+  kind = Kind::STATEMENT;
+}
+
 void Statement::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   std::string name = KIND_NAME.at(kind);

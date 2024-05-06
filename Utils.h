@@ -42,9 +42,21 @@ void println(const std::string &line) {
 }
 
 namespace Utils {
+  std::string capitalise(const std::string &str) {
+    std::string output = str;
+    output[0] = std::toupper(output[0]);
+    return output;
+  }
+
   template <typename T>
   bool included(const std::vector<T> &vector, const T &element) {
-    return std::find(vector.begin(), vector.end(), element) != vector.end();
+    for (const T &current : vector) 
+      if (current == element) 
+        return true;
+        
+    return false;
+
+    // return std::find(vector.begin(), vector.end(), element) != vector.end();
   }
 
   template <typename T>
@@ -83,5 +95,11 @@ namespace Utils {
       if (i + 1 < strings.size()) result += separator;
     }
     return result;
+  }
+
+  void write_file(const std::string &file_path, const std::string &content) {
+    std::ofstream file(file_path);
+    file << content;
+    file.close();
   }
 }

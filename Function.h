@@ -10,6 +10,8 @@ class Function : public Statement {
     std::string name;
     std::vector<std::unique_ptr<Variable>> parameters;
 
+    Function();
+
     static bool is_fn_call(Stream &stream, const size_t &start_index);
 
     static bool is_lambda(Stream &stream, const size_t &start_index);

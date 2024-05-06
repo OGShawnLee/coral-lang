@@ -5,6 +5,7 @@
 
 class Enum : public Statement {
   public:
+    Type type = Type::ENUM_DECLARATION;
     std::string name;
     std::vector<std::string> values;
 
