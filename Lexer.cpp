@@ -51,6 +51,8 @@ std::map<std::string, Keyword> KEYWORD = {
   {"in", Keyword::IN},
   {"if", Keyword::IF},
   {"else", Keyword::ELSE},
+  {"continue", Keyword::CONTINUE},
+  {"break", Keyword::BREAK},
 };
 
 std::map<char, Marker> MARKER = {

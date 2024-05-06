@@ -41,6 +41,8 @@ enum class Keyword {
   IN,
   IF,
   ELSE,
+  CONTINUE,
+  BREAK,
 };
 
 enum class Marker {
