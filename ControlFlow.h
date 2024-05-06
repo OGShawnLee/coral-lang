@@ -26,7 +26,7 @@ class IF : public Statement {
 
 class When : public Statement {
   public:
-    std::unique_ptr<Expression> condition;
+    std::vector<std::unique_ptr<Expression>> conditions;
 
     When();
 

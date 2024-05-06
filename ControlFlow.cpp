@@ -88,7 +88,7 @@ PeekPtr<Match> Match::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Match> result;
   PeekPtr<Expression> condition = Expression::build(stream, start_index);
   Peek<Token> left_brace = stream.peek(condition.end_index, Marker::LEFT_BRACE);
-  size_t index = condition.end_index + 1;
+  size_t index = left_brace.end_index;
 
   while (index < stream.size()) {
     Peek<Token> next = stream.peek(index, [](const Token &token) {
@@ -147,11 +147,28 @@ PeekPtr<When> When::build(Stream &stream, const size_t &start_index) {
   }
 
   PeekPtr<When> result;
-  PeekPtr<Expression> condition = Expression::build(stream, start_index);
-  PeekVectorPtr<Statement> body = Parser::build_block(stream, condition.end_index + 1);
 
+  size_t index = start_index;
+
+  while (index < stream.size()) {
+    Token next = stream.get_next(index);
+
+    if (next.is_given_marker(Marker::LEFT_BRACE)) {
+      break;
+    }
+
+    if (next.is_given_marker(Marker::COMMA)) {
+      index += 1;
+      continue;
+    }
+
+    PeekPtr<Expression> condition = Expression::build(stream, index + 1);
+    result.data->conditions.push_back(std::move(condition.data));
+    index = condition.end_index;
+  }
+
+  PeekVectorPtr<Statement> body = Parser::build_block(stream, index);
   result.data->children = std::move(body.data);
-  result.data->condition = std::move(condition.data);
   result.end_index = body.end_index;
   return result;
 }
@@ -159,7 +176,14 @@ PeekPtr<When> When::build(Stream &stream, const size_t &start_index) {
 void When::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "When Statement {");
-  println(indentation + "  condition: " + condition->to_string(indent + 1));
+
+  if (not conditions.empty()) {
+    println(indentation + "  conditions: [");
+    for (const auto &condition : conditions) {
+      println(indentation + "    " + condition->to_string(indent + 2));
+    }
+    println(indentation + "  ]");
+  }
 
   if (not children.empty()) {
     println(indentation + "  children: [");

@@ -194,10 +194,15 @@ match planet {
 }
 
 match name {
-  when "Shawn Lee" {
+  when "Alexander" "Shawn" "Shawn Lee" {
     println("Best name there is")
   }
-  when "Felipe" {
+  when 
+    "Felipe" 
+    "Hugo"
+    "Alberto" 
+    "Roberto"
+  {
     println("What the hell is that goofy ass sounding name?")
   }
   else {
