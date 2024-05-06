@@ -42,6 +42,13 @@ PeekVectorPtr<Statement> Parser::build_block(
       }
 
       if (keyword == Keyword::FUNCTION) {
+        if (Function::is_lambda(stream, i - 1)) {
+          PeekPtr<Lambda> lambda = Function::build_as_lambda(stream, i - 1);
+          block.data.push_back(std::move(lambda.data));
+          i = lambda.end_index;
+          continue;
+        }
+
         PeekPtr<Function> function = Function::build(stream, i);
         block.data.push_back(std::move(function.data));
         i = function.end_index;

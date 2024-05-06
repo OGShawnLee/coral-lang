@@ -144,7 +144,30 @@ for number in numbers {
 
 numbers = []int {
   len: numbers:len
-  init: it + 10 * 3
+  init: numbers:at(it) * 3
 } 
 
 println(numbers)
+
+numbers = numbers:map(it * 3)
+
+fn map(array arr, function fun) {
+  return []any {
+    len: arr:len
+    init: fun(arr:at(it), it)
+  }
+}
+
+val numbers_str = map(numbers, fn (num int, i int) {
+  return "#i: #num"
+})
+
+println(numbers_str)
+
+val printing = fn {
+  println("Lambda with no parameters")
+}
+
+fn {
+  println("You have been greeted!")
+}

@@ -83,3 +83,12 @@ class Array : public Expression {
 
     virtual std::string to_string(size_t indent = 0) const;
 };
+
+class Lambda : public Expression {
+  public:
+    std::vector<std::unique_ptr<Variable>> parameters;
+    
+    void print(size_t indent = 0) const override;
+
+    virtual std::string to_string(size_t indent = 0) const;
+};

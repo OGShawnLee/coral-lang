@@ -14,6 +14,16 @@ bool Function::is_fn_call(Stream &stream, const size_t &start_index) {
     });
 }
 
+bool Function::is_lambda(Stream &stream, const size_t &start_index) {
+  return
+    stream.is_next(start_index, [](const Token &token) {
+      return token.is_given_keyword(Keyword::FUNCTION);
+    }) &&
+    stream.is_next(start_index + 1, [](const Token &token) {
+      return token.is_given_marker(Marker::LEFT_PARENTHESIS, Marker::LEFT_BRACE);
+    }); 
+}
+
 PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Function> result;
 
@@ -71,6 +81,59 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
 
   result.data->name = name.data.data;
+  result.data->children = std::move(body.data);
+  result.end_index = body.end_index;
+  return result;
+}
+
+PeekPtr<Lambda> Function::build_as_lambda(Stream &stream, const size_t &start_index) {
+  PeekPtr<Lambda> result;
+
+  Token keyword = stream.get_next(start_index);
+
+  if (not keyword.is_given_keyword(Keyword::FUNCTION)) {
+    throw std::runtime_error("DEV: Expected 'fn' keyword");
+  }
+
+  Peek<Token> opening = stream.peek(start_index + 1, [](const Token &token) {
+    return token.is_given_marker(Marker::LEFT_PARENTHESIS, Marker::LEFT_BRACE);
+  });
+
+  if (opening.data.is_given_marker(Marker::LEFT_BRACE)) {
+    PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
+    
+    result.data->children = std::move(body.data);
+    result.end_index = body.end_index;
+    return result;
+  }
+
+  size_t index = opening.end_index;
+
+  // Parsing Parameters
+  while (index < stream.size()) {
+    Peek<Token> next = stream.peek(index, [](const Token &token) {
+      return 
+        token.is_given_marker(Marker::RIGHT_PARENTHESIS, Marker::COMMA) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER);
+    });
+
+    if (next.data.is_given_marker(Marker::COMMA)) {
+      index = next.end_index;
+      continue;
+    }
+
+    if (next.data.is_given_marker(Marker::RIGHT_PARENTHESIS)) {
+      index = next.end_index;
+      break;
+    }
+    
+    PeekPtr<Variable> parameter = Variable::build_as_field(stream, index);
+    result.data->parameters.push_back(std::move(parameter.data));
+    index = parameter.end_index;
+  }
+
+  PeekVectorPtr<Statement> body = Parser::build_block(stream, index + 1);
+
   result.data->children = std::move(body.data);
   result.end_index = body.end_index;
   return result;
@@ -141,4 +204,58 @@ PeekPtr<Expression> Function::build_as_fn_call(Stream &stream, const size_t &sta
   }
 
   throw std::runtime_error("USER: Unterminated Function Call " + name.data.data);
+}
+
+void Lambda::print(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+  println(indentation + "Lambda {");
+  
+  if (not parameters.empty()) {
+    println(indentation + "  parameters: [");
+
+    for (const std::unique_ptr<Variable> &parameter : parameters) {
+      parameter->print(indent + 2);
+    }
+
+    println(indentation + "  ]");
+  }
+
+  if (not children.empty()) {
+    println(indentation + "  body: [");
+
+    for (const std::unique_ptr<Statement> &child : children) {
+      child->print(indent + 2);
+    }
+
+    println(indentation + "  ]");
+  }
+
+  println(indentation + "}");
+}
+
+std::string Lambda::to_string(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+  std::string result = "Lambda {\n";
+
+  if (not parameters.empty()) {
+    result += indentation + "  parameters: [\n";
+
+    for (const std::unique_ptr<Variable> &parameter : parameters) {
+      if (parameter->value) {
+        result += indentation + "    " + parameter->name + ": ";
+        result += parameter->value->to_string(indent + 2) + "\n";
+      } else {
+        result += indentation + "    " + parameter->name + ": " + parameter->typing + "\n";
+      }
+    }
+
+    result += indentation + "  ]\n";
+  }
+
+  if (not children.empty()) {
+    result += indentation + "  body: []\n";
+  }
+
+  result += indentation + "}";
+  return result;
 }

@@ -22,6 +22,7 @@ bool Expression::is_expression(Stream &stream, const size_t &start_index) {
     stream.is_next(start_index, [](const Token token) {
       return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
     }) || 
+    Function::is_lambda(stream, start_index) ||
     BinaryExpression::is_binary_expression(stream, start_index);
 }
 
@@ -42,6 +43,16 @@ PeekPtr<Expression> Expression::build(
     result.data = std::move(child.data);
     result.end_index = child.end_index;
   } else {
+    if (Function::is_lambda(stream, start_index)) {
+      PeekPtr<Lambda> lambda = Function::build_as_lambda(stream, start_index);
+
+      result.data->value = lambda.data->value;
+      result.data = std::move(lambda.data);
+      result.end_index = lambda.end_index;
+      
+      return result;
+    }
+
     bool is_arr_literal = Array::is_arr_literal(stream, start_index);
     bool is_fn_call = Function::is_fn_call(stream, start_index);
     bool is_struct_literal = Struct::is_struct_literal(stream, start_index);
