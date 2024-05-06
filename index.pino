@@ -171,3 +171,36 @@ val printing = fn {
 fn {
   println("You have been greeted!")
 }
+
+enum Planet {
+  MERCURY
+  VENUS
+  EARTH
+  MARS
+}
+
+val planet = Planet:VENUS
+
+match planet {
+  when MERCURY {
+    println("You are on the smallest planet, but you dead")
+  }
+  when EARTH {
+    println("You are probably alive and well")
+  }
+  else {
+    println("You are dead")
+  }
+}
+
+match name {
+  when "Shawn Lee" {
+    println("Best name there is")
+  }
+  when "Felipe" {
+    println("What the hell is that goofy ass sounding name?")
+  }
+  else {
+    println("Meh")
+  }
+}

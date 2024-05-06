@@ -24,3 +24,24 @@ class IF : public Statement {
     virtual void print(size_t indent = 0) const;
 };
 
+class When : public Statement {
+  public:
+    std::unique_ptr<Expression> condition;
+
+    When();
+
+    static PeekPtr<When> build(Stream &stream, const size_t &start_index);
+
+    void print(size_t indent = 0) const;
+};
+
+class Match : public Statement {
+  public:
+    std::unique_ptr<Expression> condition;
+
+    Match();
+
+    static PeekPtr<Match> build(Stream &stream, const size_t &start_index);
+
+    void print(size_t indent = 0) const;
+};

@@ -22,6 +22,8 @@ class Statement {
       IF_STATEMENT,
       ELSE_STATEMENT,
       LOOP_STATEMENT,
+      MATCH_STATEMENT,
+      WHEN_STATEMENT,
     };
 
     Type type;

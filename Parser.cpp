@@ -64,6 +64,12 @@ PeekVectorPtr<Statement> Parser::build_block(
         throw std::runtime_error("USER: Unpaired 'else' keyword");
       }
 
+      if (keyword == Keyword::MATCH) {
+        PeekPtr<Match> match = Match::build(stream, i);
+        block.data.push_back(std::move(match.data));
+        i = match.end_index;
+      }
+
       if (keyword == Keyword::STRUCT) {
         PeekPtr<Struct> structure = Struct::build(stream, i);
         block.data.push_back(std::move(structure.data));

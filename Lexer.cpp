@@ -53,6 +53,8 @@ std::map<std::string, Keyword> KEYWORD = {
   {"else", Keyword::ELSE},
   {"continue", Keyword::CONTINUE},
   {"break", Keyword::BREAK},
+  {"match", Keyword::MATCH},
+  {"when", Keyword::WHEN},
 };
 
 std::map<char, Marker> MARKER = {
@@ -95,6 +97,15 @@ bool Token::is_given_keyword(const Keyword &keyword) const {
   }
 
   return KEYWORD.at(data) == keyword;
+}
+
+bool Token::is_given_keyword(const Keyword &keyword_a, const Keyword &keyword_b) const {
+  if (kind != Kind::KEYWORD) {
+    return false;
+  }
+
+  Keyword keyword = KEYWORD.at(data);
+  return keyword == keyword_a or keyword == keyword_b;
 }
 
 bool Token::is_given_marker(const Marker &marker) const {

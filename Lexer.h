@@ -43,6 +43,8 @@ enum class Keyword {
   ELSE,
   CONTINUE,
   BREAK,
+  MATCH,
+  WHEN,
 };
 
 enum class Marker {
@@ -89,6 +91,7 @@ class Token {
     bool is_given_kind(const Kind &kind_a, const Kind &kind_b, const Kind &kind_c) const;
 
     bool is_given_keyword(const Keyword &keyword) const;
+    bool is_given_keyword(const Keyword &keyword_a, const Keyword &keyword_b) const;
 
     bool is_given_marker(const Marker &marker) const;
     bool is_given_marker(const Marker &marker_a, const Marker &marker_b) const;
