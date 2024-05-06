@@ -81,3 +81,26 @@ var character = Person {
 
 println(character)
 ```
+
+## Match
+```
+val name = "Shawn Lee"
+
+match name {
+  # Optional Commas
+  when "Alexander" "Shawn" "Shawn Lee" {
+    println("Best name there is")
+  }
+  when 
+    "Felipe" 
+    "Hugo"
+    "Alberto" 
+    "Roberto"
+  {
+    println("What is that goofy name?")
+  }
+  else {
+    println("OK, I guess...")
+  }
+}
+```
