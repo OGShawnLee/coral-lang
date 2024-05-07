@@ -16,8 +16,8 @@ class For : public Statement {
     };
 
     Type type = Type::LOOP_STATEMENT;
-    std::string index;
-    std::string limit;
+    std::unique_ptr<Expression> index;
+    std::unique_ptr<Expression> limit;
     Variant variant;
 
     static PeekPtr<For> build(Stream &stream, const size_t &start_index);

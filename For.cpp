@@ -11,13 +11,11 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
     throw std::runtime_error("DEV: Expected 'for' keyword");
   }
 
-  Peek<Token> next = stream.peek(start_index, [](const Token &token) {
-    return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL, Token::Kind::MARKER);
-  });
-  
+  Token next = stream.get_next(start_index);
+
   // for {}
-  if (next.data.is_given_marker(Marker::LEFT_BRACE)) {
-    PeekVectorPtr<Statement> body = Parser::build_block(stream, next.end_index);
+  if (next.is_given_marker(Marker::LEFT_BRACE)) {
+    PeekVectorPtr<Statement> body = Parser::build_block(stream, start_index + 1);
 
     result.data->variant = For::Variant::INFINITE;
     result.data->children = std::move(body.data);
@@ -25,16 +23,17 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
     return result;
   }
 
-  result.data->index = next.data.data;
-  result.end_index = next.end_index;
-
-  if (stream.is_next(next.end_index, Keyword::IN)) {
-    Peek<Token> limit = stream.peek(next.end_index + 1, [](const Token &token) {
-      return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
-    });
+  if (Expression::is_expression(stream, start_index)) {
+    PeekPtr<Expression> index = Expression::build(stream, start_index);
+    result.data->index = std::move(index.data);
+    result.end_index = index.end_index;
+  } 
+  
+  if (stream.is_next(result.end_index, Keyword::IN)) {
+    PeekPtr<Expression> limit = Expression::build(stream, result.end_index + 1);
 
     // for <index> in <limit> {}
-    result.data->limit = limit.data.data;
+    result.data->limit = std::move(limit.data);
     result.data->variant = For::Variant::FOR_IN;
     result.end_index = limit.end_index;
   } else {
@@ -52,15 +51,25 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
 void For::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "For {");
+
   if (variant == Variant::INFINITE) {
     println(indentation + "  variant: Infinite");
   } else if (variant == Variant::TIMES) {
-    println(indentation + "  index: " + index);
     println(indentation + "  variant: Times");
   } else {
-    println(indentation + "  index: " + index);
-    println(indentation + "  limit: " + limit);
     println(indentation + "  variant: For");
+  }
+
+  if (index) {
+    println(indentation + "  Index {");
+    index->print(indent + 2);
+    println(indentation + "  }");
+  }
+
+  if (limit) {
+    println(indentation + "  Limit {");
+    limit->print(indent + 2);
+    println(indentation + "  }");
   }
 
   if (not children.empty()) {

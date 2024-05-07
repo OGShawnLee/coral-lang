@@ -192,7 +192,7 @@ PeekPtr<BinaryExpression> BinaryExpression::build(
   }
 
   result.data->operation = operation.data.data;
-  result.data->value += operation.data.data;
+  result.data->value += " " + operation.data.data;
   result.end_index = operation.end_index;
 
   PeekPtr<Expression> right = Expression::build(stream, operation.end_index);
