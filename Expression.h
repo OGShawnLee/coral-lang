@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "Variable.h"
 #include "Statement.h"
+#include "Typing.h"
 
 template <typename T>
 using MapPtr = std::map<std::string, std::unique_ptr<T>>;
@@ -74,7 +75,7 @@ class Object : public Expression {
 
 class Array : public Expression {
   public:
-    std::string typing;
+    Typing typing;
     std::unique_ptr<Expression> len;
     std::unique_ptr<Expression> init;
 

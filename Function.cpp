@@ -250,7 +250,7 @@ std::string Lambda::to_string(size_t indent) const {
         result += indentation + "    " + parameter->name + ": ";
         result += parameter->value->to_string(indent + 2) + "\n";
       } else {
-        result += indentation + "    " + parameter->name + ": " + parameter->typing + "\n";
+        result += indentation + "    " + parameter->name + ": " + parameter->typing.to_string(indent + 2) + "\n";
       }
     }
 

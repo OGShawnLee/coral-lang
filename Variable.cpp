@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "Expression.cpp"
 #include "Variable.h"
+#include "Typing.cpp"
 
 Variable::Variable() {
   type = Type::VARIABLE_DECLARATION;
@@ -30,7 +31,8 @@ PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
   });
 
   PeekPtr<Expression> value = Expression::build(stream, assignment.end_index);
-
+  
+  result.data->typing.from_expression(value.data);
   result.data->name = name.data.data;
   result.data->value = std::move(value.data);
   result.end_index = value.end_index;
@@ -46,19 +48,24 @@ PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_i
 
   // field <type> | field = <value>
   Peek<Token> next = stream.peek(name.end_index, [](const Token &token) {
-    return token.is_given_kind(Token::Kind::IDENTIFIER) || token.is_given_operator(Operator::ASSIGN);
+    return 
+      token.is_given_kind(Token::Kind::IDENTIFIER) ||
+      token.is_given_literal(Token::Literal::ARRAY) || 
+      token.is_given_operator(Operator::ASSIGN);
   });
 
   if (next.data.is_given_operator(Operator::ASSIGN)) {
     // field = <value>
     PeekPtr<Expression> value = Expression::build(stream, next.end_index);
 
+    result.data->typing.from_expression(value.data);
     result.data->value = std::move(value.data);
     result.end_index = value.end_index;
   } else {
     // field <type>
-    result.data->typing = next.data.data;
-    result.end_index = next.end_index;
+    Peek<Typing> typing = Typing::build(stream, next.end_index - 1);
+    result.data->typing = std::move(typing.data);
+    result.end_index = typing.end_index;
   }
 
   result.data->name = name.data.data;
@@ -74,6 +81,7 @@ PeekPtr<Variable> Variable::build_as_property(Stream &stream, const size_t &star
 
   PeekPtr<Expression> value = Expression::build(stream, colon.end_index);
 
+  result.data->typing.from_expression(value.data);
   result.data->name = name.data.data;
   result.data->value = std::move(value.data);
   result.end_index = value.end_index;
@@ -99,9 +107,7 @@ void Variable::print(size_t indent) const {
     );
   }
   
-  if (not typing.empty()) {
-    println(indentation + "  type: " + typing);  
-  }
+  println(indentation + "  type: " + typing.to_string(indent + 1));  
 
   println(indentation + "}");
 }

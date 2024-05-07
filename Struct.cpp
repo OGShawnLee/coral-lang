@@ -95,6 +95,7 @@ PeekPtr<Object> Struct::build_as_struct_literal(Stream &stream, const size_t &st
     }
 
     if (next.data.is_given_marker(Marker::RIGHT_BRACE)) {
+      result.data->literal = Token::Literal::STRUCT;
       result.data->name = name.data.data;
       result.end_index = next.end_index;
       return result;

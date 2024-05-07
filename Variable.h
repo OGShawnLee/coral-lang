@@ -5,12 +5,13 @@
 #include "Utils.h"
 #include "Expression.h"
 #include "Statement.h"
+#include "Typing.h"
 
 class Variable : public Statement {
   public:
     std::string name;
     std::unique_ptr<Expression> value;
-    std::string typing;
+    Typing typing;
     bool is_constant;
     bool is_field = false;
 

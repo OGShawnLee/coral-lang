@@ -108,6 +108,14 @@ bool Token::is_given_keyword(const Keyword &keyword_a, const Keyword &keyword_b)
   return keyword == keyword_a or keyword == keyword_b;
 }
 
+bool Token::is_given_literal(const Literal &literal) const {
+  if (kind != Kind::LITERAL) {
+    return false;
+  }
+
+  return literal == this->literal;
+}
+
 bool Token::is_given_marker(const Marker &marker) const {
   if (kind != Kind::MARKER) {
     return false;
@@ -278,6 +286,7 @@ Peek<Token> Lexer::handle_arr_literal(const std::string &line, const size_t star
     if (character == ']') {
       result.data.data = "[]";
       result.data.kind = Token::Kind::LITERAL;
+      result.data.literal = Token::Literal::ARRAY;
       result.end_index = i;
       return result;
     }

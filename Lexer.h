@@ -70,11 +70,20 @@ class Token {
       KEYWORD,
     };
 
+    /*
+      Array, Boolean, Integer, String, Float are literals determined by the Lexer 
+      The rest are assigned by the Parser and are stored here for Typing class convienence
+    */
     enum class Literal {
+      ARRAY,
       BOOLEAN,
       INTEGER,
       STRING,
       FLOAT,
+      // Assigned by the Parser
+      VOID,
+      STRUCT,
+      UNKNOWN,
     };
 
     std::string data;
@@ -89,6 +98,8 @@ class Token {
     bool is_given_kind(const Kind &kind) const;
     bool is_given_kind(const Kind &kind_a, const Kind &kind_b) const;
     bool is_given_kind(const Kind &kind_a, const Kind &kind_b, const Kind &kind_c) const;
+
+    bool is_given_literal(const Literal &literal) const;
 
     bool is_given_keyword(const Keyword &keyword) const;
     bool is_given_keyword(const Keyword &keyword_a, const Keyword &keyword_b) const;
