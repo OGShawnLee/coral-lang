@@ -162,12 +162,12 @@ PeekPtr<When> When::build(Stream &stream, const size_t &start_index) {
       continue;
     }
 
-    PeekPtr<Expression> condition = Expression::build(stream, index + 1);
+    PeekPtr<Expression> condition = Expression::build(stream, index);
     result.data->conditions.push_back(std::move(condition.data));
     index = condition.end_index;
   }
 
-  PeekVectorPtr<Statement> body = Parser::build_block(stream, index);
+  PeekVectorPtr<Statement> body = Parser::build_block(stream, index + 1);
   result.data->children = std::move(body.data);
   result.end_index = body.end_index;
   return result;
