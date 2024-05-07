@@ -42,6 +42,41 @@ get_message(
 )
 ```
 
+### Lambdas (Anonymous Functions)
+```
+fn {
+  println("This is a lambda with no parameters")
+}
+
+val greet = fn (name str) {
+  println("Hello, #name!")
+}
+```
+
+### Functional Programming
+```
+fn map(arr array, fun function) {
+  return []any {
+    len: array:len
+    init: fun(array:at(it))
+  }
+}
+
+val double_it = fn (it int) {
+  return number * 2
+}
+
+var collection = []int { len: 3, init: it + 3 }
+
+collection = map(collection, double_it) 
+println(collection)
+
+collection = map(collection, fn (it int) {
+  return it * 10
+})
+println(collection)
+```
+
 ## Enum and Struct
 
 ```
