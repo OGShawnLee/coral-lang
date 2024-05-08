@@ -81,6 +81,7 @@ class Token {
       STRING,
       FLOAT,
       // Assigned by the Parser
+      LAMBDA,
       VOID,
       STRUCT,
       UNKNOWN,
@@ -106,6 +107,7 @@ class Token {
 
     bool is_given_marker(const Marker &marker) const;
     bool is_given_marker(const Marker &marker_a, const Marker &marker_b) const;
+    bool is_given_marker(const Marker &marker_a, const Marker &marker_b, const Marker &marker_c) const;
 
     bool is_given_operator(const Operator &op) const;
 

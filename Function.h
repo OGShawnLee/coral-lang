@@ -4,6 +4,7 @@
 #include "Expression.h"
 #include "Statement.h"
 #include "Variable.h"
+#include "Typing.h"
 
 class Function : public Statement {
   public:
@@ -19,6 +20,8 @@ class Function : public Statement {
     static PeekPtr<Function> build(Stream &stream, const size_t &start_index);
 
     static PeekPtr<Expression> build_as_fn_call(Stream &stream, const size_t &start_index);
+
+    static Peek<Typing> build_as_fn_type(Stream &stream, const size_t &start_index);
     
     static PeekPtr<Lambda> build_as_lambda(Stream &stream, const size_t &start_index);
 

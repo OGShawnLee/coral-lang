@@ -90,6 +90,68 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
   return result;
 }
 
+Peek<Typing> Function::build_as_fn_type(Stream &stream, const size_t &start_index) {
+  if (not stream.at(start_index).is_given_keyword(Keyword::FUNCTION)) {
+    throw std::runtime_error("DEV: Expected 'fn' keyword");
+  }
+
+  // fn (<name> fn) { <body> }
+  // fn (<name> fn (...)) { <body> }
+  // fn (<name> fn, ...) { <body> }
+  Peek<Token> opening = stream.peek(start_index, [](const Token &token) {
+    return token.is_given_marker(
+      Marker::LEFT_PARENTHESIS, 
+      Marker::RIGHT_PARENTHESIS,
+      Marker::COMMA
+    );
+  });
+
+  Peek<Typing> result;
+
+  if (not opening.data.is_given_marker(Marker::LEFT_PARENTHESIS)) {
+    result.data.data = Token::Literal::LAMBDA;
+    result.data.value = "fn";
+    result.end_index = start_index;
+    return result;
+  }
+
+  result.data.value = "fn (";
+
+  size_t index = opening.end_index;
+  // For Storing Each Parameter Value
+  // and then we concatenate them to the result value
+  std::vector<std::string> values;
+
+  while (index < stream.size()) {
+    Peek<Token> next = stream.peek(index, [](const Token &token) {
+      return 
+        token.is_given_marker(Marker::RIGHT_PARENTHESIS, Marker::COMMA) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER) ||
+        token.is_given_keyword(Keyword::FUNCTION);
+    });
+
+    if (next.data.is_given_marker(Marker::COMMA)) {
+      index = next.end_index;
+      continue;
+    }
+
+    if (next.data.is_given_marker(Marker::RIGHT_PARENTHESIS)) {
+      result.data.data = Token::Literal::LAMBDA;
+      result.data.value += Utils::join(values, ", ");
+      result.data.value += ")";
+      result.end_index = next.end_index;
+      return result;
+    }
+
+    Peek<Typing> parameter = Typing::build(stream, index);
+    values.push_back(parameter.data.value);
+    result.data.children.push_back(std::move(parameter.data));
+    index = parameter.end_index;
+  }
+
+  throw std::runtime_error("DEV: Unterminated Function Type");
+}
+
 PeekPtr<Lambda> Function::build_as_lambda(Stream &stream, const size_t &start_index) {
   PeekPtr<Lambda> result;
 
@@ -106,6 +168,8 @@ PeekPtr<Lambda> Function::build_as_lambda(Stream &stream, const size_t &start_in
   if (opening.data.is_given_marker(Marker::LEFT_BRACE)) {
     PeekVectorPtr<Statement> body = Parser::build_block(stream, opening.end_index);
     
+    result.data->variant = Lambda::Variant::LITERAL;
+    result.data->literal = Token::Literal::LAMBDA;
     result.data->children = std::move(body.data);
     result.end_index = body.end_index;
     return result;
@@ -138,6 +202,8 @@ PeekPtr<Lambda> Function::build_as_lambda(Stream &stream, const size_t &start_in
 
   PeekVectorPtr<Statement> body = Parser::build_block(stream, index + 1);
 
+  result.data->variant = Lambda::Variant::LITERAL;
+  result.data->literal = Token::Literal::LAMBDA;
   result.data->children = std::move(body.data);
   result.end_index = body.end_index;
   return result;

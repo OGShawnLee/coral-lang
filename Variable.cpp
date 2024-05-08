@@ -51,7 +51,8 @@ PeekPtr<Variable> Variable::build_as_field(Stream &stream, const size_t &start_i
     return 
       token.is_given_kind(Token::Kind::IDENTIFIER) ||
       token.is_given_literal(Token::Literal::ARRAY) || 
-      token.is_given_operator(Operator::ASSIGN);
+      token.is_given_operator(Operator::ASSIGN) ||
+      token.is_given_keyword(Keyword::FUNCTION);
   });
 
   if (next.data.is_given_operator(Operator::ASSIGN)) {

@@ -141,6 +141,15 @@ bool Token::is_given_marker(const Marker &marker_a, const Marker &marker_b) cons
   return marker == marker_a or marker == marker_b;
 }
 
+bool Token::is_given_marker(const Marker &marker_a, const Marker &marker_b, const Marker &marker_c) const {
+  if (kind != Kind::MARKER) {
+    return false;
+  }
+
+  Marker marker = MARKER.at(data[0]);
+  return marker == marker_a or marker == marker_b or marker == marker_c;
+}
+
 Marker Token::get_marker(const char character) {
   return MARKER.at(character);
 }

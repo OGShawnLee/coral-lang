@@ -151,19 +151,6 @@ println(numbers)
 
 numbers = numbers:map(it * 3)
 
-fn map(array arr, function fun) {
-  return []any {
-    len: arr:len
-    init: fun(arr:at(it), it)
-  }
-}
-
-val numbers_str = map(numbers, fn (num int, i int) {
-  return "#i: #num"
-})
-
-println(numbers_str)
-
 val printing = fn {
   println("Lambda with no parameters")
 }
@@ -221,3 +208,34 @@ val matrix = [][]int {
 val person = Person {
   name: "Shawn Lee"
 }
+
+fn fold(
+  arr []int
+  initial int
+  fun fn(int, int)
+) {
+  var acc = initial
+  for num in arr {
+    acc += fun(num, acc)
+  }
+  return acc
+}
+
+fn map(arr []int, fun fn(int)) {
+  return []int {
+    len: arr:len
+    init: fun(arr:at(it))
+  }
+}
+
+fn call(fun fn) {
+  fun()
+}
+
+val arr_int = []int { len: 6, init: it * 3 }
+val arr_big = map(arr_int, fn (num int) {
+  return num * 10
+})
+val total = fold(arr_big, 0, fn (num int, acc int) {
+  return acc + num
+})
