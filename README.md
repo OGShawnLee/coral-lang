@@ -55,26 +55,40 @@ val greet = fn (name str) {
 
 ### Functional Programming
 ```
-fn map(arr array, fun function) {
-  return []any {
-    len: array:len
-    init: fun(array:at(it))
+fn fold(
+  arr []int
+  initial int
+  fun fn(int, int)
+) {
+  var acc = initial
+  for num in arr {
+    acc += fun(num, acc)
+  }
+  return acc
+}
+
+fn map(arr []int, fun fn(int)) {
+  return []int {
+    len: arr:len
+    init: fun(arr:at(it))
   }
 }
 
-val double_it = fn (it int) {
-  return number * 2
+fn call(fun fn) {
+  fun()
 }
 
-var collection = []int { len: 3, init: it + 3 }
-
-collection = map(collection, double_it) 
-println(collection)
-
-collection = map(collection, fn (it int) {
-  return it * 10
+val arr_int = []int { len: 6, init: it * 3 }
+val arr_big = map(arr_int, fn (num int) {
+  return num * 10
 })
-println(collection)
+val total = fold(arr_big, 0, fn (num int, acc int) {
+  return acc + num
+})
+
+call(fn {
+  println("Hello!")
+})
 ```
 
 ## Enum and Struct

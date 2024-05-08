@@ -239,3 +239,7 @@ val arr_big = map(arr_int, fn (num int) {
 val total = fold(arr_big, 0, fn (num int, acc int) {
   return acc + num
 })
+
+call(fn {
+  println("Hello!")
+})
