@@ -4,22 +4,22 @@
 #include "Statement.h"
 #include "Expression.h"
 
-class ELSE : public Statement {
+class Else : public Statement {
   public:
     Type type = Type::ELSE_STATEMENT;
 
-    static PeekPtr<ELSE> build(Stream &stream, const size_t &start_index);
+    static PeekPtr<Else> build(Stream &stream, const size_t &start_index);
 
     virtual void print(size_t indent = 0) const;
 };
 
-class IF : public Statement {
+class If : public Statement {
   public:
     Type type = Type::IF_STATEMENT;
     std::unique_ptr<Expression> condition;
-    std::unique_ptr<ELSE> else_block;
+    std::unique_ptr<Else> else_block;
 
-    static PeekPtr<IF> build(Stream &stream, const size_t &start_index);
+    static PeekPtr<If> build(Stream &stream, const size_t &start_index);
 
     virtual void print(size_t indent = 0) const;
 };

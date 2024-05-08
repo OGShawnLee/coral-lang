@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Utils.h"
-#include "ControlFlow.h"
+#include "Conditional.h"
 #include "Parser.h"
 
-PeekPtr<ELSE> ELSE::build(Stream &stream, const size_t &start_index) {
+PeekPtr<Else> Else::build(Stream &stream, const size_t &start_index) {
   if (not stream.at(start_index).is_given_keyword(Keyword::ELSE)) {
     throw std::runtime_error("DEV: Expected 'else' keyword");
   }
 
-  PeekPtr<ELSE> result;
+  PeekPtr<Else> result;
   PeekVectorPtr<Statement> body = Parser::build_block(stream, start_index + 1);
 
   result.data->children = std::move(body.data);
@@ -18,7 +18,7 @@ PeekPtr<ELSE> ELSE::build(Stream &stream, const size_t &start_index) {
   return result;
 }
 
-void ELSE::print(size_t indent) const {
+void Else::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "Else Statement {");
 
@@ -33,18 +33,18 @@ void ELSE::print(size_t indent) const {
   println(indentation + "}");
 }
 
-PeekPtr<IF> IF::build(Stream &stream, const size_t &start_index) {
+PeekPtr<If> If::build(Stream &stream, const size_t &start_index) {
   if (not stream.at(start_index).is_given_keyword(Keyword::IF)) {
     throw std::runtime_error("DEV: Expected 'if' keyword");
   }
 
-  PeekPtr<IF> result;
+  PeekPtr<If> result;
 
   PeekPtr<Expression> condition = Expression::build(stream, start_index);
   PeekVectorPtr<Statement> body = Parser::build_block(stream, condition.end_index + 1);
 
   if (stream.is_next(body.end_index, Keyword::ELSE)) {
-    PeekPtr<ELSE> else_block = ELSE::build(stream, body.end_index + 1);
+    PeekPtr<Else> else_block = Else::build(stream, body.end_index + 1);
     
     result.data->else_block = std::move(else_block.data);
     result.end_index = else_block.end_index;
@@ -56,7 +56,7 @@ PeekPtr<IF> IF::build(Stream &stream, const size_t &start_index) {
   return result;
 }
 
-void IF::print(size_t indent) const {
+void If::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
   println(indentation + "If Statement {");
   println(indentation + "  condition: " + condition->to_string(indent + 1));
@@ -112,7 +112,7 @@ PeekPtr<Match> Match::build(Stream &stream, const size_t &start_index) {
       result.data->children.push_back(std::move(when.data));
       index = when.end_index;
     } else {
-      PeekPtr<ELSE> else_block = ELSE::build(stream, next.end_index);
+      PeekPtr<Else> else_block = Else::build(stream, next.end_index);
       result.data->children.push_back(std::move(else_block.data));
       index = else_block.end_index;
     }

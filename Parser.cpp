@@ -8,7 +8,7 @@
 #include "Function.cpp"
 #include "Struct.cpp"
 #include "Variable.cpp"
-#include "ControlFlow.cpp"
+#include "Conditional.cpp"
 
 PeekVectorPtr<Statement> Parser::build_block(
   Stream &stream, 
@@ -55,7 +55,7 @@ PeekVectorPtr<Statement> Parser::build_block(
       }
 
       if (keyword == Keyword::IF) {
-        PeekPtr<IF> condition = IF::build(stream, i);
+        PeekPtr<If> condition = If::build(stream, i);
         block.data.push_back(std::move(condition.data));
         i = condition.end_index;
       } 
