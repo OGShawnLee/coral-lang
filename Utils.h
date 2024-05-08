@@ -42,6 +42,16 @@ void println(const std::string &line) {
 }
 
 namespace Utils {
+  bool is_all_upper(const std::string &str) {
+    for (char character : str) {
+      if (character == '_' || isdigit(character)) continue;
+      if (not isupper(character)) 
+        return false;
+    } 
+
+    return true;
+  }
+
   std::string capitalise(const std::string &str) {
     std::string output = str;
     output[0] = std::toupper(output[0]);

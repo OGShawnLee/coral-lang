@@ -78,7 +78,6 @@ println(collection)
 ```
 
 ## Enum and Struct
-
 ```
 # Optional Commas
 enum Hair {

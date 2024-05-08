@@ -6,14 +6,19 @@
 PeekPtr<Enum> Enum::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Enum> result;
 
-  Token keyword = stream[start_index];
-  if (not keyword.is_given_keyword(Keyword::ENUM)) {
+  if (not stream.at(start_index).is_given_keyword(Keyword::ENUM)) {
     throw std::runtime_error("DEV: Expected 'enum' keyword");
   }
 
   Peek<Token> name = stream.peek(start_index, [](const Token &token) {
     return token.is_given_kind(Token::Kind::IDENTIFIER);
   });
+   
+  if (not isupper(name.data.data[0])) {
+    throw std::runtime_error(
+      "USER: Enum name must start with an uppercase letter (" + name.data.data + ")"
+    );
+  }
 
   Peek<Token> opening = stream.peek(name.end_index, [](const Token &token) {
     return token.is_given_marker(Marker::LEFT_BRACE);
@@ -40,6 +45,12 @@ PeekPtr<Enum> Enum::build(Stream &stream, const size_t &start_index) {
       }
 
       return result;
+    }
+
+    if (not Utils::is_all_upper(next.data.data)) {
+      throw std::runtime_error(
+        "USER: Enum value must be all uppercase (" + next.data.data + ")"
+      );
     }
 
     result.data->values.push_back(next.data.data);
