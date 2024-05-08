@@ -52,6 +52,7 @@ PeekPtr<Array> Array::build(Stream &stream, const size_t &start_index) {
     result.end_index = properties.end_index;
   }
 
+  result.data->variant = Expression::Variant::LITERAL;
   return result;
 }
 

@@ -16,6 +16,7 @@ class Typing {
 
     static Peek<Typing> build(Stream &stream, const size_t &start_index);
 
+    static Token::Literal infer_built_in_type_from_string(std::string data);
     static std::string infer_built_in_type(Token::Literal literal);
     
     void print(size_t indent = 0) const;

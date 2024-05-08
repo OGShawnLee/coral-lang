@@ -4,6 +4,22 @@
 #include "Expression.cpp"
 #include "Typing.h"
 
+Token::Literal Typing::infer_built_in_type_from_string(std::string data) {
+  if (data == "bool") {
+    return Token::Literal::BOOLEAN;
+  } else if (data == "int") {
+    return Token::Literal::INTEGER;
+  } else if (data == "str") {
+    return Token::Literal::STRING;
+  } else if (data == "float") {
+    return Token::Literal::FLOAT;
+  } else if (isupper(data[0])) {
+    return Token::Literal::STRUCT;
+  } else {
+    return Token::Literal::UNKNOWN;
+  }
+}
+
 std::string Typing::infer_built_in_type(Token::Literal literal) {
   switch (literal) {
     case Token::Literal::ARRAY:
@@ -22,25 +38,25 @@ std::string Typing::infer_built_in_type(Token::Literal literal) {
 }
 
 void Typing::from_expression(const std::unique_ptr<Expression> &expression) {
+  if (expression->variant != Expression::Variant::LITERAL) {
+    this->data = Token::Literal::UNKNOWN;
+    this->value = expression->value;
+    return;
+  } 
+
   data = expression->literal;
 
   if (expression->literal == Token::Literal::STRUCT) {
     Object *object = static_cast<Object *>(expression.get());
     this->value = object->name;
-  // for some reason
-  // this triggers a bad alloc error when the array has init or len binary expressions
   } else if (expression->literal == Token::Literal::ARRAY) {
     Array *array = static_cast<Array *>(expression.get());
-    try {
-      this->value = array->typing.value;
-      this->data = array->typing.data;
-      this->children = array->typing.children;
-    } catch (std::bad_alloc &e) {
-      std::cerr << "bad alloc caught: " << e.what() << std::endl;
-    }
-  } else if (expression->literal != Token::Literal::ARRAY) {
-    this->value = expression->value;
-  }   
+    this->value = array->typing.value;
+    this->data = array->typing.data;
+    this->children = array->typing.children;
+  } else {
+    this->value = infer_built_in_type(data);
+  }
 }
 
 Peek<Typing> Typing::build(Stream &stream, const size_t &start_index) {
@@ -55,7 +71,8 @@ Peek<Typing> Typing::build(Stream &stream, const size_t &start_index) {
 
     if (next.data.is_given_kind(Token::Kind::IDENTIFIER)) {
       Peek<Typing> result;
-      
+
+      result.data.data = infer_built_in_type_from_string(next.data.data);
       result.data.value = next.data.data;
       result.end_index = next.end_index;
       return result;
