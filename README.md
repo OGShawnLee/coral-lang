@@ -10,6 +10,55 @@ var children = 0
 var budget = 0.75
 ```
 
+## Conditional
+### If and Else Statements
+```
+val is_single = true
+val has_self_love = true
+val name = "Shawn"
+
+if is_single {
+  println("#name is still single")
+}
+
+if is_single {
+  println("#name is still single")
+} else {
+  println("#name got a girlfriend!")
+}
+
+if is_single {
+  println("#name is still single")
+} else if has_self_love {
+  println("#name got a girlfriend and has achieved peak happiness!")
+} else {
+  println("#name got a girlfriend!")
+}
+```
+
+### Match
+```
+val name = "Shawn Lee"
+
+match name {
+  # Optional Commas
+  when "Alexander" "Shawn" "Shawn Lee" {
+    println("Best name there is")
+  }
+  when 
+    "Felipe" 
+    "Hugo"
+    "Alberto" 
+    "Roberto"
+  {
+    println("What is that goofy name?")
+  }
+  else {
+    println("OK, I guess...")
+  }
+}
+```
+
 ## Functions
 
 ```
@@ -128,27 +177,4 @@ var character = Person {
 }
 
 println(character)
-```
-
-## Match
-```
-val name = "Shawn Lee"
-
-match name {
-  # Optional Commas
-  when "Alexander" "Shawn" "Shawn Lee" {
-    println("Best name there is")
-  }
-  when 
-    "Felipe" 
-    "Hugo"
-    "Alberto" 
-    "Roberto"
-  {
-    println("What is that goofy name?")
-  }
-  else {
-    println("OK, I guess...")
-  }
-}
 ```
