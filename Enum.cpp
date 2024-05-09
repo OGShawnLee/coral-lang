@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include "Enum.h"
+#include "Function.cpp"
 
 PeekPtr<Enum> Enum::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Enum> result;
@@ -28,8 +29,19 @@ PeekPtr<Enum> Enum::build(Stream &stream, const size_t &start_index) {
 
   while (index < stream.size()) {
     Peek<Token> next = stream.peek(index, [](const Token &token) {
-      return token.is_given_marker(Marker::RIGHT_BRACE, Marker::COMMA) || token.is_given_kind(Token::Kind::IDENTIFIER);
+      return 
+        token.is_given_marker(Marker::RIGHT_BRACE, Marker::COMMA) || 
+        token.is_given_kind(Token::Kind::IDENTIFIER) || 
+        token.is_given_keyword(Keyword::FUNCTION);
     });
+
+    if (next.data.kind == Token::Kind::KEYWORD) {
+      PeekPtr<Function> method = Function::build(stream, next.end_index);
+
+      result.data->methods.push_back(std::move(method.data));
+      index = method.end_index;
+      continue;
+    }
 
     if (next.data.is_given_marker(Marker::COMMA)) {
       index = next.end_index;
@@ -63,10 +75,19 @@ PeekPtr<Enum> Enum::build(Stream &stream, const size_t &start_index) {
 void Enum::print(size_t indent) const {
   std::string indentation = Utils::get_indent(indent);
 
-  std::cout << indentation << "Enum: " << name << " {\n";
+  println(indentation + "Enum: " + name + " {");
+  println(indentation+ "  values: {");
   for (const std::string &value : values) {
-    std::cout << indentation << "  " << value << '\n';
+    println(indentation + "    " + value);
   }
-  std::cout << indentation << "}\n";
+  println(indentation + "  }");
+  if (not methods.empty()) {
+    println(indentation + "  methods: {");
+    for (const auto &fun : methods) {
+      fun->print(indent + 2);
+    }
+    println(indentation + "  }");
+  }
+  println(indentation + "}");
 }
 

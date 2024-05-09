@@ -5,6 +5,10 @@ enum Hair {
   MEDIUM
   LONG
   VERY_LONG
+
+  fn print {
+    println("Hello from enum Hair!")
+  }
 }
 
 struct Person {
