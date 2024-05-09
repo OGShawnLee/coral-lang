@@ -43,15 +43,16 @@ PeekPtr<If> If::build(Stream &stream, const size_t &start_index) {
   PeekPtr<Expression> condition = Expression::build(stream, start_index);
   PeekVectorPtr<Statement> body = Parser::build_block(stream, condition.end_index + 1);
 
+  result.data->condition = std::move(condition.data);
+  result.data->children = std::move(body.data);
+  result.end_index = body.end_index;
+ 
   if (stream.is_next(body.end_index, Keyword::ELSE)) {
-    PeekPtr<Else> else_block = Else::build(stream, body.end_index + 1);
+    PeekPtr<Else> else_block = Else::build(stream, result.end_index + 1);
     
     result.data->else_block = std::move(else_block.data);
     result.end_index = else_block.end_index;
   }
-
-  result.data->condition = std::move(condition.data);
-  result.data->children = std::move(body.data);
 
   return result;
 }
