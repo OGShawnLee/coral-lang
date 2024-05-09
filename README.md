@@ -10,6 +10,25 @@ var children = 0
 var budget = 0.75
 ```
 
+## Arrays
+```
+var collection = []int # Empty Array
+# Optional Commas
+collection = []int {
+  len: 12
+  init: it * 12 # len must be declared if init is present
+}
+# mapping
+val string = []str {
+  len: collection:len
+  init: "#it: String"
+} 
+val matrix = [][]int {
+  len: 9
+  init: []int { len: 9, init: it + 10 }
+}
+```
+
 ## Conditional
 ### If and Else Statements
 ```
@@ -33,6 +52,18 @@ if is_single {
   println("#name got a girlfriend and has achieved peak happiness!")
 } else {
   println("#name got a girlfriend!")
+}
+
+val age = 4
+
+if age < 0 {
+  println("Huh?")
+} else if age < 18 {
+  println("Get away you kiddo!")
+} else if age < 21 {
+  println("Almost there!")
+} else {
+  println("You can drink")
 }
 ```
 
