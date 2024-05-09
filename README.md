@@ -181,6 +181,23 @@ enum Hair {
   MEDIUM
   LONG
   VERY_LONG
+
+  # Enum Method
+  fn get_hair(len_cm float) {
+    if len_cm < 1  {
+      return BALD
+    } else if len_cm <= 2.5 {
+      return VERY_SHORT
+    } else if len_cm <= 5 {
+      return SHORT
+    } else if len_cm <= 7 {
+      return MEDIUM
+    } else if len_cm <= 10 {
+      return LONG
+    } else {
+      return VERY_LONG
+    }
+  }
 }
 
 # Optional Commas
@@ -189,6 +206,16 @@ struct Person {
   country str
   planet = "Earth" # Default Value
   hair Hair
+
+  fn greet {
+    println("Hello, #name!")
+  }
+
+  # Struct Method
+  fn move(nation str) {
+    country = nation
+    println("#name has moved to #nation")
+  }
 }
 
 # Optional Commas
@@ -204,8 +231,9 @@ println(character:name, character:country)
 var character = Person {
   name: "Julia Lee",
   country: "France",
-  hair: Hair:LONG,
+  hair: Hair:get_hair(15.75),
 }
 
+character:greet()
 println(character)
 ```
