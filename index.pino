@@ -9,6 +9,22 @@ enum Hair {
   fn print {
     println("Hello from enum Hair!")
   }
+
+  fn get_hair(len float) {
+    if len < 1  {
+      return BALD
+    } else if len <= 2.5 {
+      return VERY_SHORT
+    } else if len <= 5 {
+      return SHORT
+    } else if len <= 7 {
+      return MEDIUM
+    } else if len <= 10 {
+      return LONG
+    } else {
+      return VERY_LONG
+    }
+  }
 }
 
 struct Person {
@@ -271,3 +287,12 @@ if true {
 } else {
   println("else")
 }
+
+var amount = 1000
+
+amount = 1000
+amount += 10
+amount -= 10
+amount *= 10
+amount /= 10
+amount %= 10

@@ -183,7 +183,7 @@ PeekPtr<BinaryExpression> BinaryExpression::build(
     return Token::is_binary_operator(token.data);
   });
 
-  if (operation.data.data == "=") {
+  if (Utils::any_of(operation.data.data, { "=", "+=", "-=", "*=", "/=", "%=" })) {
     result.data->variant = Expression::Variant::ASSIGNMENT;
   } else if (operation.data.data == ":") {
     result.data->variant = Expression::Variant::PROPERTY_ACCESS;

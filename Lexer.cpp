@@ -16,28 +16,80 @@ std::string get_kind_name(Token::Kind kind) {
   return KIND.at(kind);
 }
 
-std::map<std::string, Operator> OPERATOR = {
-  {"=", Operator::ASSIGN},
-  {"+", Operator::ADD},
-  {"-", Operator::SUB},
-  {"*", Operator::MUL},
-  {"/", Operator::DIV},
-  {"%", Operator::MOD},
+// Stores only single character operator
+std::map<char, Operator> CHAR_OPERATOR = {
+  {'=', Operator::ASSIGN},
+  {'+', Operator::ADDITION},
+  {'-', Operator::SUBTRACTION},
+  {'*', Operator::MULTIPLICATION},
+  {'/', Operator::DIVISION},
+  {'%', Operator::MODULUS},
+  {'>', Operator::MORE_THAN},
+  {'<', Operator::LESS_THAN},
+  {'!', Operator::NOT_CHAR},
+};
+
+// Stores only multiple character operator
+std::map<std::string, Operator> LONG_OPERATOR = {
   {"and", Operator::AND},
   {"or", Operator::OR},
   {"not", Operator::NOT},
+  {">=", Operator::MORE_THAN_EQUAL},
+  {"<=", Operator::LESS_THAN_EQUAL},
+  {"==", Operator::EQUAL},
+  {"!=", Operator::NOT_EQUAL},
+  {"+=", Operator::ASSIGN_ADDITION},
+  {"-=", Operator::ASSIGN_SUBTRACTION},
+  {"*=", Operator::ASSIGN_MULTIPLICATION},
+  {"/=", Operator::ASSIGN_DIVISION},
+  {"%=", Operator::ASSIGN_MODULUS},
+};
+
+// Stores them all and is used for checking
+std::map<std::string, Operator> OPERATOR = {
+  {"=", Operator::ASSIGN},
+  {"+", Operator::ADDITION},
+  {"-", Operator::SUBTRACTION},
+  {"*", Operator::MULTIPLICATION},
+  {"/", Operator::DIVISION},
+  {"%", Operator::MODULUS},
+  {"and", Operator::AND},
+  {"or", Operator::OR},
+  {"not", Operator::NOT},
+  {">", Operator::MORE_THAN},
+  {"<", Operator::LESS_THAN},
+  {">=", Operator::MORE_THAN_EQUAL},
+  {"<=", Operator::LESS_THAN_EQUAL},
+  {"==", Operator::EQUAL},
+  {"!=", Operator::NOT_EQUAL},
+  {"+=", Operator::ASSIGN_ADDITION},
+  {"-=", Operator::ASSIGN_SUBTRACTION},
+  {"*=", Operator::ASSIGN_MULTIPLICATION},
+  {"/=", Operator::ASSIGN_DIVISION},
+  {"%=", Operator::ASSIGN_MODULUS},
 };
 
 std::map<std::string, BinaryOperator> BINARY_OPERATOR = {
   {"=", BinaryOperator::ASSIGN},
-  {"+", BinaryOperator::ADD},
-  {"-", BinaryOperator::SUB},
-  {"*", BinaryOperator::MUL},
-  {"/", BinaryOperator::DIV},
-  {"%", BinaryOperator::MOD},
+  {"+", BinaryOperator::ADDITION},
+  {"-", BinaryOperator::SUBTRACTION},
+  {"*", BinaryOperator::MULTIPLICATION},
+  {"/", BinaryOperator::DIVISION},
+  {"%", BinaryOperator::MODULUS},
   {"and", BinaryOperator::AND},
   {"or", BinaryOperator::OR},
   {":", BinaryOperator::COLON},
+  {">", BinaryOperator::MORE_THAN},
+  {">=", BinaryOperator::MORE_THAN_EQUAL},
+  {"<", BinaryOperator::LESS_THAN},
+  {"<=", BinaryOperator::LESS_THAN_EQUAL},
+  {"==", BinaryOperator::EQUAL},
+  {"!=", BinaryOperator::NOT_EQUAL},
+  {"+=", BinaryOperator::ASSIGN_ADDITION},
+  {"-=", BinaryOperator::ASSIGN_SUBTRACTION},
+  {"*=", BinaryOperator::ASSIGN_MULTIPLICATION},
+  {"/=", BinaryOperator::ASSIGN_DIVISION},
+  {"%=", BinaryOperator::ASSIGN_MODULUS},
 };
 
 std::map<std::string, Keyword> KEYWORD = {
@@ -182,6 +234,10 @@ bool is_int_literal(const std::string &line) {
 
 bool Token::is_operator(const std::string &line) {
   return OPERATOR.find(line) != OPERATOR.end();
+}
+
+bool Token::is_operator(const char &character) {
+  return CHAR_OPERATOR.find(character) != CHAR_OPERATOR.end();
 }
 
 bool Token::is_binary_operator(const std::string &line) {
@@ -364,6 +420,7 @@ Result Lexer::handle_str_literal(const std::string &line, size_t start_index) {
 Token Lexer::handle_buffer(std::string &buffer) {
   Token token;
 
+  // Handle Long Operator (and, or, not, ...)
   if (Token::is_operator(buffer)) {
     token.kind = Token::Kind::OPERATOR;
   } else if (Token::is_keyword(buffer)) {
@@ -398,6 +455,36 @@ Stream Lexer::lex_ln(std::string line) {
   
   for (size_t i = 0; i < line.size(); i++) {
     const char character = line[i];
+
+    if (Token::is_operator(character)) {
+      // <buffer> <operator>
+      if (not buffer.empty()) {
+        stream.push_back(handle_buffer(buffer));
+      }
+
+      bool is_next_operator = is_next(line, i , [](const char &character) {
+        return Token::is_operator(character);
+      });
+
+      // Binary Operator
+      if (is_next_operator) {
+        std::string binary = line.substr(i, 2);
+
+        if (not Token::is_binary_operator(binary)) {
+          throw std::runtime_error("DEV: Invalid Binary Operator (" + binary + ")");
+        }
+
+        stream.push_back(handle_buffer(binary));
+        i++;
+      } else {
+        Token token;
+        token.kind = Token::Kind::OPERATOR;
+        token.data = std::string(1, character);
+        stream.push_back(token);
+      }
+
+      continue;
+    }
 
     if (Utils::is_whitespace(character)) {
       if (buffer.empty()) continue;

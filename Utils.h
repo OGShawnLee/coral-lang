@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -60,13 +61,13 @@ namespace Utils {
 
   template <typename T>
   bool included(const std::vector<T> &vector, const T &element) {
-    for (const T &current : vector) 
-      if (current == element) 
-        return true;
-        
-    return false;
+    return std::find(vector.begin(), vector.end(), element) != vector.end();
+  }
 
-    // return std::find(vector.begin(), vector.end(), element) != vector.end();
+  bool any_of(const std::string &line, const std::vector<std::string> target) {
+    return std::any_of(target.begin(), target.end(), [&line](const std::string &target) {
+      return target == line;
+    });
   }
 
   template <typename T>

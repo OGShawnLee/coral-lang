@@ -8,26 +8,49 @@
 
 enum class Operator {
   ASSIGN,
-  ADD,
-  SUB,
-  MUL,
-  DIV,
-  MOD,
+  ADDITION,
+  ASSIGN_ADDITION,
+  SUBTRACTION,
+  ASSIGN_SUBTRACTION,
+  MULTIPLICATION,
+  ASSIGN_MULTIPLICATION,
+  DIVISION,
+  ASSIGN_DIVISION,
+  MODULUS,
+  ASSIGN_MODULUS,
   AND,
   OR,
   NOT,
+  NOT_CHAR,
+  MORE_THAN,
+  MORE_THAN_EQUAL,
+  LESS_THAN,
+  LESS_THAN_EQUAL,
+  EQUAL,
+  NOT_EQUAL,
 };
 
 enum class BinaryOperator {
   ASSIGN,
-  ADD,
-  SUB,
-  MUL,
-  DIV,
-  MOD,
+  ADDITION,
+  ASSIGN_ADDITION,
+  SUBTRACTION,
+  ASSIGN_SUBTRACTION,
+  MULTIPLICATION,
+  ASSIGN_MULTIPLICATION,
+  DIVISION,
+  ASSIGN_DIVISION,
+  MODULUS,
+  ASSIGN_MODULUS,
   AND,
   OR,
   COLON,
+  MORE_THAN,
+  MORE_THAN_EQUAL,
+  LESS_THAN,
+  LESS_THAN_EQUAL,
+  EQUAL,
+  NOT_EQUAL,
 };
 
 enum class Keyword {
@@ -125,6 +148,7 @@ class Token {
     static bool is_int_literal(const std::string &buffer);
 
     static bool is_operator(const std::string &buffer);
+    static bool is_operator(const char &character);
 
     static bool is_binary_operator(const std::string &buffer);
 
