@@ -247,3 +247,27 @@ val total = fold(arr_big, 0, fn (num int, acc int) {
 call(fn {
   println("Hello!")
 })
+
+if true {
+  println("if")
+}
+
+if true {
+  println("if")
+} else {
+  println("else")
+}
+
+if true {
+  println("if")
+} else if true {
+  println("else-if")
+}
+
+if true {
+  println("if")
+} else if true {
+  println("else-if")
+} else {
+  println("else")
+}

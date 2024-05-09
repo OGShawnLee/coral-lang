@@ -10,10 +10,16 @@ PeekPtr<Else> Else::build(Stream &stream, const size_t &start_index) {
   }
 
   PeekPtr<Else> result;
-  PeekVectorPtr<Statement> body = Parser::build_block(stream, start_index + 1);
 
-  result.data->children = std::move(body.data);
-  result.end_index = body.end_index;
+  if (stream.is_next(start_index, Keyword::IF)) {
+    PeekPtr<If> if_statement = If::build(stream, start_index + 1);
+    result.data->children.push_back(std::move(if_statement.data));
+    result.end_index = if_statement.end_index;
+  } else {
+    PeekVectorPtr<Statement> body = Parser::build_block(stream, start_index + 1);
+    result.data->children = std::move(body.data);
+    result.end_index = body.end_index;
+  }
 
   return result;
 }
