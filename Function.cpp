@@ -7,6 +7,8 @@
 Function::Function() {
   kind = Kind::STATEMENT;
   type = Type::FUNCTION_DECLARATION;
+  typing.data = Token::Literal::VOID;
+  typing.value = "void";
 }
 
 bool Function::is_fn_call(Stream &stream, const size_t &start_index) {
@@ -77,6 +79,7 @@ PeekPtr<Function> Function::build(Stream &stream, const size_t &start_index) {
     }
     
     PeekPtr<Variable> parameter = Variable::build_as_field(stream, index);
+    result.data->typing.children.push_back(parameter.data->typing);
     result.data->parameters.push_back(std::move(parameter.data));
     index = parameter.end_index;
   }

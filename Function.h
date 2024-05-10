@@ -10,6 +10,7 @@ class Function : public Statement {
   public:
     std::string name;
     std::vector<std::unique_ptr<Variable>> parameters;
+    Typing typing;
 
     Function();
 
