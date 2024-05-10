@@ -6,8 +6,6 @@
 
 class Else : public Statement {
   public:
-    Type type = Type::ELSE_STATEMENT;
-
     static PeekPtr<Else> build(Stream &stream, const size_t &start_index);
 
     virtual void print(size_t indent = 0) const;
@@ -15,7 +13,6 @@ class Else : public Statement {
 
 class If : public Statement {
   public:
-    Type type = Type::IF_STATEMENT;
     std::unique_ptr<Expression> condition;
     std::unique_ptr<Else> else_block;
 

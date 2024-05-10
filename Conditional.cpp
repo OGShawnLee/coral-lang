@@ -21,6 +21,7 @@ PeekPtr<Else> Else::build(Stream &stream, const size_t &start_index) {
     result.end_index = body.end_index;
   }
 
+  result.data->type = Statement::Type::ELSE_STATEMENT;
   return result;
 }
 
@@ -60,6 +61,7 @@ PeekPtr<If> If::build(Stream &stream, const size_t &start_index) {
     result.end_index = else_block.end_index;
   }
 
+  result.data->type = Statement::Type::IF_STATEMENT;
   return result;
 }
 

@@ -17,6 +17,7 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
   if (next.is_given_marker(Marker::LEFT_BRACE)) {
     PeekVectorPtr<Statement> body = Parser::build_block(stream, start_index + 1);
 
+    result.data->type = Statement::Type::LOOP_STATEMENT;
     result.data->variant = For::Variant::INFINITE;
     result.data->children = std::move(body.data);
     result.end_index = body.end_index;
@@ -42,6 +43,7 @@ PeekPtr<For> For::build(Stream &stream, const size_t &start_index) {
   }
 
   PeekVectorPtr<Statement> body = Parser::build_block(stream, result.end_index + 1);
+  result.data->type = Statement::Type::LOOP_STATEMENT;
   result.data->children = std::move(body.data);
   result.end_index = body.end_index;
 

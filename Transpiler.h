@@ -5,14 +5,29 @@
 #include "Statement.cpp"
 
 class Transpiler {
-  size_t indentation = 0;
   std::string output;
+    
+  std::string handle_expression(
+    const std::unique_ptr<Statement> &statement,
+    const size_t &indentation = 0
+  );
+  std::string handle_expression(
+    const std::unique_ptr<Expression> &expression,
+    const size_t &indentation = 0
+  );
+  std::string handle_expression(
+    const Expression *expression, 
+    const size_t &indentation = 0
+  );
 
-  std::string get_value(const std::unique_ptr<Statement> &statement);
-  std::string get_value(const std::unique_ptr<Expression> &expression);
-  std::string get_value(const Expression *expression);
-
-  void handle_statement(const std::unique_ptr<Statement> &statement);
+  void handle_statement(
+    const std::unique_ptr<Statement> &statement,
+    const size_t &indentation = 0
+  );
+  void handle_loop_statement(
+    const std::unique_ptr<Statement> &statement,
+    const size_t indentation = 0
+  );
 
   public: 
     void transpile(const std::string &file_path, const std::string &output_path);

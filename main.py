@@ -1,6 +1,18 @@
-name = "Shawn Lee"
-children = 0
-budget = 0.75
-is_married = False
-full_name = input("What is your full name? ")
-print(full_name, name, is_married)
+def print_character(name, game):
+    print("\t" + name + " is a cool " + game + " character")
+
+game = input("What game? ")
+times = int(input("How many characters do you want to add? "))
+if times > 5:
+    print("\tToo many characters!")
+    print("\tReducing to only 5...")
+    times = 5
+
+collection = []
+for _ in range(times):
+    collection.append(input("What is their name? "))
+
+print("Characters from " + game + ":")
+for character in collection:
+    print_character(character, game)
+

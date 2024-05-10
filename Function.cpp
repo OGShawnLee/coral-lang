@@ -5,6 +5,7 @@
 #include "Parser.h"
 
 Function::Function() {
+  kind = Kind::STATEMENT;
   type = Type::FUNCTION_DECLARATION;
 }
 

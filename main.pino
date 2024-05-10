@@ -1,12 +1,27 @@
-val name = "Shawn Lee"
-val children = 0
-val budget = 0.75
-val is_married = false
+fn print_character(name str, game str) {
+  println("\t" + name + " is a cool " + game + " character")
+}
 
-val full_name = readln("What is your full name? ")
-
-println(
-  full_name
-  name
-  is_married
+val game = readln("What game? ")
+var times = int(
+  readln("How many characters do you want to add? ")
 )
+
+if times > 5 {
+  println("\tToo many characters!")
+  println("\tReducing to only 5...")
+  times = 5
+}
+
+val collection = []str
+
+for times {
+  collection:append(
+    readln("What is their name? ")
+  )
+}
+
+println("Characters from " + game + ":")
+for character in collection {
+  print_character(character, game)
+}

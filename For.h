@@ -15,7 +15,6 @@ class For : public Statement {
       // for {}
     };
 
-    Type type = Type::LOOP_STATEMENT;
     std::unique_ptr<Expression> index;
     std::unique_ptr<Expression> limit;
     Variant variant;
