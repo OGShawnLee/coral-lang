@@ -90,6 +90,26 @@ match name {
 }
 ```
 
+## Loop
+```
+for {
+  println("This will run forever!")
+}
+
+for 12 {
+  println("This will run 12 times")
+}
+
+for i in 12 {
+  println("This has run for the #i time a total of 12 times")
+}
+
+val int_arr = []int { len: 3, init: it + 1 }
+for integer in int_arr {
+  println(integer)
+}
+```
+
 ## Functions
 
 ```
