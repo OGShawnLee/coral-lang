@@ -65,6 +65,13 @@ void Typing::from_expression(const std::unique_ptr<Expression> &expression) {
   }
 }
 
+Typing Typing::create(const Token::Literal &literal) {
+  Typing typing;
+  typing.data = literal;
+  typing.value = infer_built_in_type(literal);
+  return typing;
+}
+
 Peek<Typing> Typing::build(Stream &stream, const size_t &start_index) {
   size_t index = start_index;
 

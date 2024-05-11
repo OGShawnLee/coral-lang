@@ -6,6 +6,10 @@
 std::map<std::string, std::string> BUILT_IN_FN = {
   {"println", "print"},
   {"readln", "input"},
+  {"int", "int"},
+  {"float", "float"},
+  {"bool", "bool"},
+  {"len", "len"},
 };
 
 std::string get_built_in_fn(const std::string &name) {
@@ -71,56 +75,45 @@ void Scope::append(std::string name, const Typing &type, Entity entity) {
   }
 }
 
-void Checker::check_binary_expression(
+Typing Checker::check_binary_expression(
   const BinaryExpression *element,
   std::shared_ptr<Scope> &current_scope
 ) {
   switch (element->variant) {
     case Expression::Variant::ASSIGNMENT: {
-      check_expression(element->left, current_scope);
-      check_expression(element->right, current_scope);
+      Typing left = check_expression(element->left, current_scope);
+      Typing right = check_expression(element->right, current_scope);
 
-      if (element->left->variant == Expression::Variant::IDENTIFIER) {
-        Typing left = current_scope->get_typing(element->left->value);
-
-        if (element->right->variant == Expression::Variant::IDENTIFIER) {
-          Typing right = current_scope->get_typing(element->right->value);
-
-          if (left.data == right.data) break;
-
-          println("Unable to Assign: " + element->left->value + " to " + element->right->value);
-          println("\tType Mismatch: " + left.value + " and " + right.value);
-          global_scope->failed = failed = true;
-        } 
-        
-        if (element->right->variant == Expression::Variant::LITERAL) {
-          if (left.data == element->right->literal) break;
-
-          println("Unable to Assign: " + element->left->value + " to " + element->right->value);
-          println("\tType Mismatch: " + left.value + " and " + Typing::infer_built_in_type(element->right->literal));
-          global_scope->failed = failed = true;
-        }
+      if (right.data != left.data) {
+        println("Unable to Assign: " + element->left->value + " to " + element->right->value);
+        println("\tType Mismatch: " + left.value + " and " + right.value);
+        global_scope->failed = failed = true;
+        return Typing::create(Token::Literal::UNKNOWN);
       }
+
+      return left;
     } break;
   }
+
+  return Typing::create(Token::Literal::UNKNOWN);
 }
 
-void Checker::check_expression(
+Typing Checker::check_expression(
   const std::unique_ptr<Statement> &element,
   std::shared_ptr<Scope> &current_scope
 ) {
   const auto expression = static_cast<Expression*>(element.get());
-  check_expression(expression, current_scope);
+  return check_expression(expression, current_scope);
 }
 
-void Checker::check_expression(
+Typing Checker::check_expression(
   const std::unique_ptr<Expression> &element,
   std::shared_ptr<Scope> &current_scope
 ) {
-  check_expression(element.get(), current_scope);
+  return check_expression(element.get(), current_scope);
 }
 
-void Checker::check_expression(
+Typing Checker::check_expression(
   const Expression *element,
   std::shared_ptr<Scope> &current_scope
 ) {
@@ -129,7 +122,10 @@ void Checker::check_expression(
       if (current_scope->is_undefined(element->value)) {
         println("Undefined Identifier '" + element->value + "'");
         global_scope->failed = failed = true;
+        return Typing::create(Token::Literal::UNKNOWN);
       }
+
+      return current_scope->get_typing(element->value);
     } break;
     case Expression::Variant::FUNCTION_CALL: {
       if (is_built_in_fn(element->value)) {
@@ -139,19 +135,23 @@ void Checker::check_expression(
       if (current_scope->is_undefined(element->value)) {
         println("Undefined Function '" + element->value + "'");
         global_scope->failed = failed = true;
+        return Typing::create(Token::Literal::UNKNOWN);
       }
     } break;
     case Expression::Variant::ASSIGNMENT: {
-      check_binary_expression(
+      return check_binary_expression(
         static_cast<const BinaryExpression*>(element), 
         current_scope
       );
     } break;
     case Expression::Variant::LITERAL: 
+      return Typing::create(element->literal);
       break;
     default:
       println("Unhandled Expression Variant");
   }
+
+  return Typing::create(Token::Literal::UNKNOWN);
 }
 
 void Checker::check_statement(
@@ -167,10 +167,10 @@ void Checker::check_statement(
     case Statement::Type::CONSTANT_DECLARATION: 
     case Statement::Type::VARIABLE_DECLARATION: {
       const auto variable = static_cast<Variable*>(element.get());
-      
+
       current_scope->append(
         variable->name, 
-        variable->typing, 
+        check_expression(variable->value, current_scope),
         variable->is_constant ? Scope::Entity::CONSTANT : Scope::Entity::VARIABLE
       );
     } break;

@@ -12,6 +12,8 @@ class Typing {
     std::string value;
     std::vector<Typing> children;
 
+    static Typing create(const Token::Literal &literal);
+
     void from_expression(const std::unique_ptr<Expression> &expression);
 
     static Peek<Typing> build(Stream &stream, const size_t &start_index);
