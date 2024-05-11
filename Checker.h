@@ -30,10 +30,24 @@ class Checker {
   std::shared_ptr<Scope> global_scope;
   bool failed;
 
+  void check_binary_expression(
+    const BinaryExpression *element,
+    std::shared_ptr<Scope> &current_scope
+  );
+
   void check_expression(
     const std::unique_ptr<Statement> &element,
     std::shared_ptr<Scope> &current_scope
   );
+  void check_expression(
+    const std::unique_ptr<Expression> &element,
+    std::shared_ptr<Scope> &current_scope
+  );
+  void check_expression(
+    const Expression *element,
+    std::shared_ptr<Scope> &current_scope
+  );
+
   void check_statement(
     const std::unique_ptr<Statement> &element, 
     std::shared_ptr<Scope> &current_scope

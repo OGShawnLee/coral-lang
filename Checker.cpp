@@ -63,29 +63,63 @@ void Scope::append(std::string name, const Typing &type, Entity entity) {
   }
 }
 
+void Checker::check_binary_expression(
+  const BinaryExpression *element,
+  std::shared_ptr<Scope> &current_scope
+) {
+  switch (element->variant) {
+    case Expression::Variant::ASSIGNMENT: {
+      check_expression(element->left, current_scope);
+      check_expression(element->right, current_scope);
+    } break;
+  }
+}
+
 void Checker::check_expression(
   const std::unique_ptr<Statement> &element,
   std::shared_ptr<Scope> &current_scope
 ) {
   const auto expression = static_cast<Expression*>(element.get());
-  switch (expression->variant) {
+  check_expression(expression, current_scope);
+}
+
+void Checker::check_expression(
+  const std::unique_ptr<Expression> &element,
+  std::shared_ptr<Scope> &current_scope
+) {
+  const auto expression = element.get();
+  check_expression(expression, current_scope);
+}
+
+void Checker::check_expression(
+  const Expression *element,
+  std::shared_ptr<Scope> &current_scope
+) {
+  switch (element->variant) {
     case Expression::Variant::IDENTIFIER: {
-      if (current_scope->is_undefined(expression->value)) {
-        println("Undefined Identifier '" + expression->value + "'");
+      if (current_scope->is_undefined(element->value)) {
+        println("Undefined Identifier '" + element->value + "'");
         global_scope->failed = failed = true;
       }
     } break;
     case Expression::Variant::FUNCTION_CALL: {
-      if (is_built_in_fn(expression->value)) {
+      if (is_built_in_fn(element->value)) {
         break;
       }
 
-      if (current_scope->is_undefined(expression->value)) {
-        println("Undefined Function '" + expression->value + "'");
+      if (current_scope->is_undefined(element->value)) {
+        println("Undefined Function '" + element->value + "'");
         global_scope->failed = failed = true;
       }
     } break;
+    case Expression::Variant::ASSIGNMENT: {
+      check_binary_expression(
+        static_cast<const BinaryExpression*>(element), 
+        current_scope
+      );
+    } break;
     default:
+      element->print();
       println("Unhandled Expression Variant");
   }
 }
