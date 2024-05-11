@@ -34,7 +34,7 @@ std::string Typing::infer_built_in_type(Token::Literal literal) {
     case Token::Literal::FLOAT:
       return "float";
     default:
-      return "unkown";
+      return "unknown";
   }
 }
 
