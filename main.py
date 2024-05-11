@@ -8,10 +8,7 @@ if times > 5:
     print("\tReducing to only 5...")
     times = 5
 
-collection = []
-for _ in range(times):
-    collection.append(input("What is their name? "))
-
+collection = [input("What is their name? ") for it in range(times)]
 print(f"Characters from {game}:")
 for character in collection:
     print_character(character, game)

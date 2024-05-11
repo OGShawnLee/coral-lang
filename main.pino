@@ -13,12 +13,9 @@ if times > 5 {
   times = 5
 }
 
-val collection = []str
-
-for times {
-  collection:append(
-    readln("What is their name? ")
-  )
+val collection = []str {
+  len: times
+  init: readln("What is their name? ")
 }
 
 println("Characters from #game:")

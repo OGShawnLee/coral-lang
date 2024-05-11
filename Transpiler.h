@@ -6,6 +6,10 @@
 
 class Transpiler {
   std::string output;
+
+  std::string handle_arr_literal(const Expression* literal);
+  std::string handle_str_literal(const Expression* literal);
+  std::string handle_literal(const Expression* literal);
     
   std::string handle_expression(
     const std::unique_ptr<Statement> &statement,

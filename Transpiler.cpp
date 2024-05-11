@@ -16,7 +16,23 @@ bool is_built_in_fn(const std::string &name) {
   return BUILT_IN_FN.find(name) != BUILT_IN_FN.end();
 }
 
-std::string handle_str_literal(const Expression* literal) {
+std::string Transpiler::handle_arr_literal(const Expression* literal) {
+  const auto arr = static_cast<const Array*>(literal);
+  std::string output = "[";
+
+  if (arr->len && arr->init) {
+    output += handle_expression(arr->init);
+    output += " for it in range(" + handle_expression(arr->len) + ")";
+  } else if (arr->len) {
+    output += "None";
+    output += " for _ in range(" + handle_expression(arr->len) + ")";
+  } 
+
+  output += "]";
+  return output;
+}
+
+std::string Transpiler::handle_str_literal(const Expression* literal) {
   const auto str = static_cast<const String*>(literal);
 
   if (str->injections.empty()) {
@@ -28,6 +44,18 @@ std::string handle_str_literal(const Expression* literal) {
       Utils::replace(output, "#" + injection, '{' + injection + '}');
     }
     return output;
+  }
+}
+
+std::string Transpiler::handle_literal(const Expression* literal) {
+  if (literal->literal == Token::Literal::ARRAY) {
+    return handle_arr_literal(literal);
+  } else if (literal->literal == Token::Literal::STRING) {
+    return handle_str_literal(literal);
+  } else if (literal->literal == Token::Literal::BOOLEAN) {
+    return Utils::capitalise(literal->value);
+  } else {
+    return literal->value;
   }
 }
 
@@ -77,13 +105,7 @@ std::string Transpiler::handle_expression(
       break;
     }
     case Expression::Variant::LITERAL: {
-      if (expression->literal == Token::Literal::STRING) {
-        output = handle_str_literal(expression);
-      } else if (expression->literal == Token::Literal::BOOLEAN) {
-        output = Utils::capitalise(expression->value);
-      } else {
-        output = expression->value;
-      }
+      output += handle_literal(expression);
       break;
     }
     case Expression::Variant::FUNCTION_CALL: {
