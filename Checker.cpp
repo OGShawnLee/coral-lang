@@ -6,6 +6,7 @@
 std::map<std::string, std::string> BUILT_IN_FN = {
   {"println", "print"},
   {"readln", "input"},
+  {"str", "str"},
   {"int", "int"},
   {"float", "float"},
   {"bool", "bool"},
@@ -133,7 +134,7 @@ Typing Checker::check_expression(
     } break;
     case Expression::Variant::FUNCTION_CALL: {
       if (is_built_in_fn(element->value)) {
-        break;
+        return global_scope->get_typing(get_built_in_fn(element->value));
       }
 
       if (current_scope->is_undefined(element->value)) {
@@ -205,7 +206,15 @@ void Checker::check_statement(
 Checker::Checker(const Statement &element) {
   failed = false;
   global_scope = std::make_shared<Scope>();
-  
+
+  global_scope->append("print", Typing::create(Token::Literal::VOID), Scope::Entity::FUNCTION);
+  global_scope->append("input", Typing::create(Token::Literal::STRING), Scope::Entity::FUNCTION);
+  global_scope->append("str", Typing::create(Token::Literal::STRING), Scope::Entity::FUNCTION);
+  global_scope->append("int", Typing::create(Token::Literal::INTEGER), Scope::Entity::FUNCTION);
+  global_scope->append("float", Typing::create(Token::Literal::FLOAT), Scope::Entity::FUNCTION);
+  global_scope->append("bool", Typing::create(Token::Literal::BOOLEAN), Scope::Entity::FUNCTION);
+  global_scope->append("len", Typing::create(Token::Literal::INTEGER), Scope::Entity::FUNCTION);
+
   for (const auto &child : element.children) {
     if (child->kind == Statement::Kind::STATEMENT) {
       check_statement(child, global_scope);
