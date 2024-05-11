@@ -23,6 +23,14 @@ std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> &parent) {
   return scope;
 }
 
+Typing Scope::get_typing(std::string name) {
+  if (not is_undefined(name)) {
+    return entities[name];
+  }
+
+  return parent->get_typing(name);
+}
+
 bool Scope::is_duplicate(std::string name) {
   return Utils::has_key(entities, name);
 }
@@ -71,6 +79,28 @@ void Checker::check_binary_expression(
     case Expression::Variant::ASSIGNMENT: {
       check_expression(element->left, current_scope);
       check_expression(element->right, current_scope);
+
+      if (element->left->variant == Expression::Variant::IDENTIFIER) {
+        Typing left = current_scope->get_typing(element->left->value);
+
+        if (element->right->variant == Expression::Variant::IDENTIFIER) {
+          Typing right = current_scope->get_typing(element->right->value);
+
+          if (left.data == right.data) break;
+
+          println("Unable to Assign: " + element->left->value + " to " + element->right->value);
+          println("\tType Mismatch: " + left.value + " and " + right.value);
+          global_scope->failed = failed = true;
+        } 
+        
+        if (element->right->variant == Expression::Variant::LITERAL) {
+          if (left.data == element->right->literal) break;
+
+          println("Unable to Assign: " + element->left->value + " to " + element->right->value);
+          println("\tType Mismatch: " + left.value + " and " + Typing::infer_built_in_type(element->right->literal));
+          global_scope->failed = failed = true;
+        }
+      }
     } break;
   }
 }
@@ -87,8 +117,7 @@ void Checker::check_expression(
   const std::unique_ptr<Expression> &element,
   std::shared_ptr<Scope> &current_scope
 ) {
-  const auto expression = element.get();
-  check_expression(expression, current_scope);
+  check_expression(element.get(), current_scope);
 }
 
 void Checker::check_expression(
@@ -118,8 +147,9 @@ void Checker::check_expression(
         current_scope
       );
     } break;
+    case Expression::Variant::LITERAL: 
+      break;
     default:
-      element->print();
       println("Unhandled Expression Variant");
   }
 }

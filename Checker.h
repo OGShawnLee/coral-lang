@@ -20,10 +20,12 @@ class Scope {
 
     static std::shared_ptr<Scope> create(std::shared_ptr<Scope> &parent);
 
+    Typing get_typing(std::string name);
+
     void append(std::string name, const Typing &type, enum Entity entity);
 
     bool is_undefined(std::string name);
-    bool is_duplicate(std::string name); 
+    bool is_duplicate(std::string name);
 };
 
 class Checker {
