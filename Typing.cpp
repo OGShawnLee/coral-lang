@@ -41,7 +41,7 @@ std::string Typing::infer_built_in_type(Token::Literal literal) {
 void Typing::from_expression(const std::unique_ptr<Expression> &expression) {
   if (expression->variant != Expression::Variant::LITERAL) {
     this->data = Token::Literal::UNKNOWN;
-    this->value = expression->value;
+    this->value = infer_built_in_type(Token::Literal::UNKNOWN);
     return;
   } 
 
