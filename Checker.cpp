@@ -200,6 +200,20 @@ void Checker::check_statement(
         global_scope->failed = failed = true;
       }
     } break;
+    case Statement::Type::IF_STATEMENT: {
+      const auto if_statement = static_cast<If*>(element.get());
+      check_expression(if_statement->condition, current_scope);
+
+      auto child_scope = Scope::create(current_scope);
+
+      for (const auto &child : if_statement->children) {
+        check_statement(child, child_scope);
+      }
+
+      if (child_scope->failed) {
+        global_scope->failed = failed = true;
+      }
+    } break;
   }
 }
 
