@@ -100,7 +100,7 @@ PeekPtr<Expression> Expression::build(
 
     Token next = stream.get_next(start_index);
 
-    if (next.literal == Token::Literal::STRING) {
+    if (next.is_given_literal(Token::Literal::STRING)) {
       result.data = std::move(String::create(next));
     } else {
       result.data->variant = 
