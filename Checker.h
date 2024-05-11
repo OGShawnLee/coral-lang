@@ -13,11 +13,12 @@ class Scope {
       VARIABLE,
       STRUCT,
     };
-
+    
+    std::shared_ptr<Scope> parent;
     std::map<std::string, Typing> entities;
     bool failed;
 
-    Scope();
+    static std::shared_ptr<Scope> create(std::shared_ptr<Scope> &parent);
 
     void append(std::string name, const Typing &type, enum Entity entity);
 
@@ -25,13 +26,13 @@ class Scope {
 };
 
 class Checker {
-  Scope global_scope;
+  std::shared_ptr<Scope> global_scope;
   bool failed;
 
   void check_expression(const std::unique_ptr<Statement> &element);
   void check_statement(
     const std::unique_ptr<Statement> &element, 
-    Scope &scope
+    std::shared_ptr<Scope> &current_scope
   );
 
   public:

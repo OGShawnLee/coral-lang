@@ -3,8 +3,11 @@
 #include "Utils.h"
 #include "Checker.h"
 
-Scope::Scope() {
-  failed = false;
+std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> &parent) {
+  auto scope = std::make_shared<Scope>();
+  scope->failed = false;
+  scope->parent = scope;
+  return scope;
 }
 
 bool Scope::is_duplicate(std::string name) {
@@ -37,14 +40,14 @@ void Scope::append(std::string name, const Typing &type, Entity entity) {
 
 void Checker::check_statement(
   const std::unique_ptr<Statement> &element,
-  Scope &scope
+  std::shared_ptr<Scope> &current_scope
 ) {
   switch (element->type) {
     case Statement::Type::CONSTANT_DECLARATION: 
     case Statement::Type::VARIABLE_DECLARATION: {
       const auto variable = static_cast<Variable*>(element.get());
       
-      scope.append(
+      current_scope->append(
         variable->name, 
         variable->typing, 
         variable->is_constant ? Scope::Entity::CONSTANT : Scope::Entity::VARIABLE
@@ -53,22 +56,22 @@ void Checker::check_statement(
     case Statement::Type::FUNCTION_DECLARATION: {
       const auto function = static_cast<Function*>(element.get());
       const Typing typing = function->typing;
-      global_scope.append(function->name, typing, Scope::Entity::FUNCTION);
+      current_scope->append(function->name, typing, Scope::Entity::FUNCTION);
 
-      Scope child_scope;
-      child_scope.append(function->name, typing, Scope::Entity::FUNCTION);
+      auto child_scope = Scope::create(current_scope);
+      child_scope->append(function->name, typing, Scope::Entity::FUNCTION);
 
       for (const auto &parameter : function->parameters) {
         const Typing typing = parameter->typing;
-        child_scope.append(parameter->name, typing, Scope::Entity::CONSTANT);
+        child_scope->append(parameter->name, typing, Scope::Entity::CONSTANT);
       }
 
       for (const auto &child : function->children) {
         check_statement(child, child_scope);
       }
 
-      if (child_scope.failed) {
-        global_scope.failed = failed = true;
+      if (child_scope->failed) {
+        global_scope->failed = failed = true;
       }
     } break;
   }
@@ -76,7 +79,8 @@ void Checker::check_statement(
 
 Checker::Checker(const Statement &element) {
   failed = false;
-
+  global_scope = std::make_shared<Scope>();
+  
   for (const auto &child : element.children) {
     if (child->kind == Statement::Kind::STATEMENT) {
       check_statement(child, global_scope);
@@ -87,7 +91,7 @@ Checker::Checker(const Statement &element) {
     }
   }
 
-  if (global_scope.failed) {
+  if (global_scope->failed) {
     failed = true;
   }
 

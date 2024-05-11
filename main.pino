@@ -1,3 +1,8 @@
+struct Character {
+  name str
+  game str
+}
+
 fn print_character(name str, game str) {
   println("\t#name is a cool #game character")
 }
