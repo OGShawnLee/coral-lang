@@ -3,19 +3,6 @@
 #include "Transpiler.h"
 #include "Parser.cpp"
 
-std::map<std::string, std::string> BUILT_IN_FN = {
-  {"println", "print"},
-  {"readln", "input"},
-};
-
-std::string get_built_in_fn(const std::string &name) {
-  return BUILT_IN_FN.at(name);
-}
-
-bool is_built_in_fn(const std::string &name) {
-  return BUILT_IN_FN.find(name) != BUILT_IN_FN.end();
-}
-
 std::string Transpiler::handle_arr_literal(const Expression* literal) {
   const auto arr = static_cast<const Array*>(literal);
   std::string output = "[";
