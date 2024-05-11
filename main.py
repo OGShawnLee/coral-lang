@@ -1,5 +1,5 @@
 def print_character(name, game):
-    print("\t" + name + " is a cool " + game + " character")
+    print(f"\t{name} is a cool {game} character")
 
 game = input("What game? ")
 times = int(input("How many characters do you want to add? "))
@@ -12,7 +12,7 @@ collection = []
 for _ in range(times):
     collection.append(input("What is their name? "))
 
-print("Characters from " + game + ":")
+print(f"Characters from {game}:")
 for character in collection:
     print_character(character, game)
 

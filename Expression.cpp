@@ -100,11 +100,15 @@ PeekPtr<Expression> Expression::build(
 
     Token next = stream.get_next(start_index);
 
-    result.data->variant = 
+    if (next.literal == Token::Literal::STRING) {
+      result.data = std::move(String::create(next));
+    } else {
+      result.data->variant = 
       next.kind == Token::Kind::IDENTIFIER ? Variant::IDENTIFIER : Variant::LITERAL;
-    result.data->literal = next.literal;
-
-    result.data->value = next.data;
+      result.data->literal = next.literal;
+      result.data->value = next.data;
+    }
+    
     result.end_index = start_index + 1;
   }
 
@@ -233,6 +237,44 @@ std::string BinaryExpression::to_string(size_t indent) const {
   result += indentation + "  left: " + left->to_string(indent + 1) + "\n";
   result += indentation + "  operation: " + operation + "\n";
   result += indentation + "  right: " + right->to_string(indent + 1) + "\n";
+  result += indentation + "}";
+
+  return result;
+}
+
+std::unique_ptr<String> String::create(Token &literal) {
+  std::unique_ptr<String> str = std::make_unique<String>();
+  
+  str->literal = std::move(literal.literal);
+  str->injections = std::move(literal.injections);
+  str->variant = Expression::Variant::LITERAL;
+  str->value = std::move(literal.data);
+
+  return str;
+}
+
+void String::print(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+
+  println(indentation + "String {");
+  println(indentation + "  value: " + value);
+  
+  if (not injections.empty()) {
+    println(indentation + "  injections: [" + Utils::join(injections, ", ") + "]");
+  }
+  println(indentation + "}");
+}
+
+std::string String::to_string(size_t indent) const {
+  std::string indentation = Utils::get_indent(indent);
+  std::string result;
+
+  result += "String {\n";
+  result += indentation + "  value: " + value + "\n";
+  
+  if (not injections.empty()) {
+    result += indentation + "  injections: [" + Utils::join(injections, ", ") + "]\n";
+  }
   result += indentation + "}";
 
   return result;

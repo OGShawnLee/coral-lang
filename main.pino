@@ -1,5 +1,5 @@
 fn print_character(name str, game str) {
-  println("\t" + name + " is a cool " + game + " character")
+  println("\t#name is a cool #game character")
 }
 
 val game = readln("What game? ")
@@ -21,7 +21,7 @@ for times {
   )
 }
 
-println("Characters from " + game + ":")
+println("Characters from #game:")
 for character in collection {
   print_character(character, game)
 }

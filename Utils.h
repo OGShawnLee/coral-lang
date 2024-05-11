@@ -113,4 +113,13 @@ namespace Utils {
     file << content;
     file.close();
   }
+
+  void replace(std::string &line, const std::string &target, const std::string &replacement) {
+    size_t index = 0;
+    
+    while ((index = line.find(target, index)) != std::string::npos) {
+      line.replace(index, target.length(), replacement);
+      index += replacement.length();
+    }
+  }
 }

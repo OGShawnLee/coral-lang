@@ -96,3 +96,14 @@ class Lambda : public Expression {
 
     virtual std::string to_string(size_t indent = 0) const;
 };
+
+class String : public Expression {
+  public:
+    std::vector<std::string> injections;
+
+    static std::unique_ptr<String> create(Token &literal);
+
+    void print(size_t indent = 0) const override;
+    
+    virtual std::string to_string(size_t indent = 0) const;
+};

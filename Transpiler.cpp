@@ -16,6 +16,21 @@ bool is_built_in_fn(const std::string &name) {
   return BUILT_IN_FN.find(name) != BUILT_IN_FN.end();
 }
 
+std::string handle_str_literal(const Expression* literal) {
+  const auto str = static_cast<const String*>(literal);
+
+  if (str->injections.empty()) {
+    return "\"" + str->value + "\"";
+  
+  } else {
+    std::string output = "f\"" + str->value + "\"";
+    for (const auto &injection : str->injections) {
+      Utils::replace(output, "#" + injection, '{' + injection + '}');
+    }
+    return output;
+  }
+}
+
 std::string Transpiler::handle_expression(
   const std::unique_ptr<Statement> &statement,
   const size_t &indentation
@@ -63,7 +78,7 @@ std::string Transpiler::handle_expression(
     }
     case Expression::Variant::LITERAL: {
       if (expression->literal == Token::Literal::STRING) {
-        output = "\"" + expression->value + "\"";
+        output = handle_str_literal(expression);
       } else if (expression->literal == Token::Literal::BOOLEAN) {
         output = Utils::capitalise(expression->value);
       } else {
