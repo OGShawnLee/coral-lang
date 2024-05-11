@@ -28,8 +28,12 @@ std::shared_ptr<Scope> Scope::create(std::shared_ptr<Scope> &parent) {
 }
 
 Typing Scope::get_typing(std::string name) {
-  if (not is_undefined(name)) {
-    return entities[name];
+  if (Utils::has_key(entities, name)) {
+    return entities.at(name);
+  }
+
+  if (parent == nullptr) {
+    return Typing::create(Token::Literal::UNKNOWN);
   }
 
   return parent->get_typing(name);
