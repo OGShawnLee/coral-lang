@@ -6,6 +6,8 @@
 
 class Else : public Statement {
   public:
+    bool is_match_else; 
+
     static PeekPtr<Else> build(Stream &stream, const size_t &start_index);
 
     virtual void print(size_t indent = 0) const;

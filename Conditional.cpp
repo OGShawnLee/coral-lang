@@ -21,6 +21,7 @@ PeekPtr<Else> Else::build(Stream &stream, const size_t &start_index) {
     result.end_index = body.end_index;
   }
 
+  result.data->is_match_else = false;
   result.data->type = Statement::Type::ELSE_STATEMENT;
   return result;
 }
@@ -122,6 +123,7 @@ PeekPtr<Match> Match::build(Stream &stream, const size_t &start_index) {
       index = when.end_index;
     } else {
       PeekPtr<Else> else_block = Else::build(stream, next.end_index);
+      else_block.data->is_match_else = true;
       result.data->children.push_back(std::move(else_block.data));
       index = else_block.end_index;
     }

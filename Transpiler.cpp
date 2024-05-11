@@ -179,8 +179,42 @@ void Transpiler::handle_statement(const std::unique_ptr<Statement> &statement, c
 
       break;
     }
+    case Statement::Type::MATCH_STATEMENT: {
+      auto match = static_cast<Match *>(statement.get());
+      output += indent + "match " + handle_expression(match->condition) + ":\n";
+      
+      for (const auto &statement : match->children) {
+        handle_statement(statement, indentation + 2);
+      }
+      break;
+    }
+    case Statement::Type::WHEN_STATEMENT: {
+      auto when = static_cast<When *>(statement.get());
+
+      std::vector<std::string> conditions;
+
+      for (const auto &condition : when->conditions) {
+        conditions.push_back(handle_expression(condition));
+      }
+
+      output += indent + "case " + Utils::join(conditions, " | ") + ":\n";
+      for (const auto &statement : when->children) {
+        handle_statement(statement, indentation + 2);
+      }
+      break;
+    }
     case Statement::Type::ELSE_STATEMENT: {
-      throw std::runtime_error("DEV: Unpaired Else Statement");
+      const auto else_statement = static_cast<Else *>(statement.get());
+
+      if (else_statement->is_match_else) {
+        output += indent + "case _:\n";
+        for (const auto &statement : else_statement->children) {
+          handle_statement(statement, indentation + 2);
+        }
+      } else {
+        throw std::runtime_error("DEV: Unpaired Else Statement");
+      }
+
       break;
     }
     case Statement::Type::LOOP_STATEMENT: {
