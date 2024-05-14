@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include "Expression.h"
 #include "Array.cpp"
+#include "Block.cpp"
 #include "Function.cpp"
 #include "Struct.cpp"
 
@@ -23,6 +24,7 @@ Expression::Expression() {
 
 bool Expression::is_expression(Stream &stream, const size_t &start_index) {
   return 
+    Block::is_block(stream, start_index) ||
     stream.is_next(start_index, [](const Token token) {
       return token.is_given_kind(Token::Kind::IDENTIFIER, Token::Kind::LITERAL);
     }) || 
@@ -39,6 +41,15 @@ PeekPtr<Expression> Expression::build(
 
   if (not is_expression(stream, start_index)) {
     throw std::runtime_error("DEV: Not an Expression");
+  }
+
+  if (Block::is_block(stream, start_index)) {
+    PeekPtr<Block> block = Block::build(stream, start_index);
+
+    result.data = std::move(block.data);
+    result.end_index = block.end_index;
+
+    return result;
   }
 
   if (BinaryExpression::is_binary_expression(stream, start_index) && with_binary) {

@@ -68,6 +68,8 @@ enum class Keyword {
   BREAK,
   MATCH,
   WHEN,
+  BLOCK,
+  GIVE,
 };
 
 enum class Marker {
@@ -168,6 +170,8 @@ class Stream : public std::vector<Token> {
     Stream() = default;
 
     Token get_next(const size_t &start_index) const;
+
+    bool is_previous(const size_t start_index, std::function<bool(const Token)> predicate) const;
 
     bool is_next(const size_t start_index, std::function<bool(const Token)> predicate) const;
     bool is_next(const size_t start_index, Keyword keyword) const;

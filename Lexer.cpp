@@ -107,6 +107,8 @@ std::map<std::string, Keyword> KEYWORD = {
   {"break", Keyword::BREAK},
   {"match", Keyword::MATCH},
   {"when", Keyword::WHEN},
+  {"block", Keyword::BLOCK},
+  {"give", Keyword::GIVE},
 };
 
 std::map<char, Marker> MARKER = {
@@ -283,6 +285,14 @@ Token Stream::get_next(const size_t &start_index) const {
   }
 
   return at(start_index + 1);
+}
+
+bool Stream::is_previous(const size_t start_index, std::function<bool(const Token)> predicate) const {
+  if (start_index == 0) {
+    return false;
+  }
+
+  return predicate(at(start_index - 1));
 }
 
 bool Stream::is_next(const size_t start_index, Keyword keyword) const {

@@ -11,16 +11,17 @@ Variable::Variable() {
 }
 
 PeekPtr<Variable> Variable::build(Stream &stream, const size_t &start_index) {
-  PeekPtr<Variable> result;
-
-  Token keyword = stream[start_index];
-  Keyword kind = Token::get_keyword(keyword.data);
+  Keyword keyword = Token::get_keyword(
+    stream.at(start_index).data
+  );
   
-  if (kind != Keyword::VAR and kind != Keyword::VAL) {
+  if (keyword != Keyword::VAL and keyword != Keyword::VAR) {
     throw std::runtime_error("DEV: Expected 'var' or 'val' keyword");
   }
 
-  result.data->is_constant = kind == Keyword::VAL;
+  PeekPtr<Variable> result;
+
+  result.data->is_constant = keyword == Keyword::VAL;
   
   Peek<Token> name = stream.peek(start_index, [](const Token &token) {
     return token.kind == Token::Kind::IDENTIFIER;

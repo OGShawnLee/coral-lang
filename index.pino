@@ -296,3 +296,46 @@ amount -= 10
 amount *= 10
 amount /= 10
 amount %= 10
+
+val name = str {
+  val name = readln("Enter a name")
+  match name {
+    when "Shawn Lee" "Shawn" "Alexander" "Lenore" {
+      println("#name is an awesome name!")
+    }
+    else {
+      println("#name is a good name")
+    }
+  }
+  give name
+}
+val num = int {
+  var num = readln("Enter an integer")
+  if num > 5 {
+    println("Integer is too large!")
+    println("Reducing to 5")
+    num = 5
+  }
+  give num
+}
+val multiply = block fn(int) {
+  val multiplier = int(
+    readln("Enter a multiplier")
+  )
+  give fn (amount int) {
+    return amount * multiplier
+  }
+}
+val collection = []int {
+  len: int {
+    var len = int(
+      readln("What is the length of the array?")
+    )
+    if len > 30 {
+      println("Too large! Reducing to 30!")
+      len = 10
+    }
+    give len
+  }
+  init: readln("Enter an integer") 
+}

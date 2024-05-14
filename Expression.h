@@ -16,6 +16,7 @@ class Expression : public Statement {
       BINARY,
         ASSIGNMENT,
         PROPERTY_ACCESS,
+      BLOCK,
       FUNCTION_CALL,
       LITERAL,
       IDENTIFIER,
@@ -82,6 +83,21 @@ class Array : public Expression {
     static bool is_arr_literal(Stream &stream, const size_t &start_index);
 
     static PeekPtr<Array> build(Stream &stream, const size_t &start_index);
+
+    void print(size_t indent = 0) const override;
+
+    virtual std::string to_string(size_t indent = 0) const;
+};
+
+class Block : public Expression {
+  public:
+    Typing typing;
+
+    Block();
+
+    static bool is_block(Stream &stream, const size_t &start_index);
+
+    static PeekPtr<Block> build(Stream &stream, const size_t &start_index);
 
     void print(size_t indent = 0) const override;
 
